@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2046
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Toolbelt.Blazor.SpeechSynthesis", "Toolbelt.Blazor.SpeechSynthesis\Toolbelt.Blazor.SpeechSynthesis.csproj", "{A6C8F993-500E-47D6-8A67-A9D416D1085C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "README", "README", "{F8CAC85F-E2A4-4237-9EDA-582595BEB7A0}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SampleSites", "SampleSites", "{D5BC12D8-F4C7-4AAA-AEDD-F4F9A024C53A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ClientSideBlazorSampleSite", "ClientSideBlazorSampleSite", "{5E6E189E-AAF7-411D-8AC1-56A966F917D5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClientSideBlazorSampleSite", "SampleSites\ClientSideBlazorSampleSite\ClientSideBlazorSampleSite.csproj", "{927D25D4-A1E1-482E-9305-C4659B9FEBB1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A6C8F993-500E-47D6-8A67-A9D416D1085C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6C8F993-500E-47D6-8A67-A9D416D1085C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6C8F993-500E-47D6-8A67-A9D416D1085C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6C8F993-500E-47D6-8A67-A9D416D1085C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{927D25D4-A1E1-482E-9305-C4659B9FEBB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{927D25D4-A1E1-482E-9305-C4659B9FEBB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{927D25D4-A1E1-482E-9305-C4659B9FEBB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{927D25D4-A1E1-482E-9305-C4659B9FEBB1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5E6E189E-AAF7-411D-8AC1-56A966F917D5} = {D5BC12D8-F4C7-4AAA-AEDD-F4F9A024C53A}
+		{927D25D4-A1E1-482E-9305-C4659B9FEBB1} = {5E6E189E-AAF7-411D-8AC1-56A966F917D5}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {55EFE8E5-C3EB-4128-9592-F27026A30FC6}
+	EndGlobalSection
+EndGlobal

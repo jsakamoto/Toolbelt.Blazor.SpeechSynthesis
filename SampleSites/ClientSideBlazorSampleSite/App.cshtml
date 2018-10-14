@@ -1,0 +1,52 @@
+﻿@using Toolbelt.Blazor.SpeechSynthesis
+@inject SpeechSynthesis SpeechSynthesis;
+
+<p>
+    <select bind="@CurrentVoiceURI">
+        @foreach (var voice in Voices)
+        {
+            <option value="@voice.VoiceURI">@voice.Name (@voice.VoiceURI)</option>
+        }
+    </select>
+</p>
+
+<p>
+    <textarea bind="@Text"></textarea>
+</p>
+<p>
+    <button onclick="@onClickSpeakButton">Speak</button>
+</p>
+
+@functions 
+{
+    string Text = "Hello World.";
+
+    IEnumerable<SpeechSynthesisVoice> Voices = new SpeechSynthesisVoice[0];
+
+    SpeechSynthesisVoice CurrentVoice;
+
+    public string CurrentVoiceURI {
+        get {return this.CurrentVoice?.VoiceURI;}
+        set { this.CurrentVoice = this.Voices.FirstOrDefault(v => v.VoiceURI == value); }
+    }
+
+    protected async override Task OnInitAsync()
+    {
+        this.Voices = await this.SpeechSynthesis.GetVoicesAsync();
+        this.CurrentVoice = this.Voices.FirstOrDefault(v => v.Default);
+    }
+
+    void onClickSpeakButton() {
+        //this.SpeechSynthesis.Speak(this.Text);
+        var utterancet = new SpeechSynthesisUtterance
+        {
+            Text = this.Text,
+            //Lang = "ja-JP",
+            Pitch = 1.0,
+            Rate = 1.0,
+            Volume = 1,
+            Voice = this.CurrentVoice
+        };
+        this.SpeechSynthesis.Speak(utterancet);
+    }
+}

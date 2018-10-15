@@ -56,11 +56,11 @@ namespace Toolbelt.Blazor.SpeechSynthesis
         public async Task<IReadOnlyCollection<SpeechSynthesisVoice>> GetVoicesAsync()
         {
             if (_Voices == null) _Voices = new List<SpeechSynthesisVoice>();
-            var latestVoices = await JSRuntime.Current.InvokeAsync<SpeechSynthesisVoice[]>(Namespace + ".getVoices");
+            var latestVoices = await JSRuntime.Current.InvokeAsync<SpeechSynthesisVoiceInternal[]>(Namespace + ".getVoices");
             var toAddVoices = latestVoices.Where(p1 => !_Voices.Any(p2 => p1.VoiceURI == p2.VoiceURI)).ToArray();
             var toRemoveVoices = _Voices.Where(p1 => !latestVoices.Any(p2 => p1.VoiceURI == p2.VoiceURI)).ToArray();
 
-            _Voices.AddRange(toAddVoices);
+            _Voices.AddRange(toAddVoices.Select(v => new SpeechSynthesisVoice(v)));
             foreach (var voice in toRemoveVoices) _Voices.Remove(voice);
 
             return _Voices;

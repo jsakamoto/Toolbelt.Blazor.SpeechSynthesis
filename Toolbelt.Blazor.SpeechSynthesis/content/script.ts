@@ -11,11 +11,11 @@
             await onVoicesChanged;
         }
         return s.getVoices().map(v => ({
-            _Default: v.default,
-            _Lang: v.lang,
-            _LocalService: v.localService,
-            _Name: v.name,
-            _VoiceURI: v.voiceURI
+            default: v.default,
+            lang: v.lang,
+            localService: v.localService,
+            name: v.name,
+            voiceURI: v.voiceURI
         }));
     }
 

@@ -1,32 +1,25 @@
-﻿using System.ComponentModel;
-
+﻿
 namespace Toolbelt.Blazor.SpeechSynthesis
 {
     public class SpeechSynthesisVoice
     {
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public bool _Default;
+        public bool Default { get; }
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public string _Lang;
+        public string Lang { get; }
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public bool _LocalService;
+        public bool LocalService { get; }
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public string _Name;
+        public string Name { get; }
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public string _VoiceURI;
+        public string VoiceURI { get; }
 
-        public bool Default => _Default;
-
-        public string Lang => _Lang;
-
-        public bool LocalService => _LocalService;
-
-        public string Name => _Name;
-
-        public string VoiceURI => _VoiceURI;
+        internal SpeechSynthesisVoice(SpeechSynthesisVoiceInternal voice)
+        {
+            this.Default = voice.Default;
+            this.Lang = voice.Lang;
+            this.LocalService = voice.LocalService;
+            this.Name = voice.Name;
+            this.VoiceURI = voice.VoiceURI;
+        }
     }
 }

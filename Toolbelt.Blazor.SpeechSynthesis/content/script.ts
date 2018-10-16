@@ -1,9 +1,10 @@
 ﻿namespace Toolbelt.Blazor.SpeechSynthesis {
-    const s = window.speechSynthesis;
-    const onVoicesChanged = s.getVoices().length == 0 ? new Promise<void>(resolve => s.addEventListener('voiceschanged', () => resolve())) : null;
+    const s = window.speechSynthesis || ({ paused: false, pending: false, speaking: false } as SpeechSynthesis);
+    const available = (typeof s.getVoices) != 'undefined';
+    const onVoicesChanged = (available && s.getVoices().length == 0) ? new Promise<void>(resolve => s.addEventListener('voiceschanged', () => resolve())) : null;
 
     export function refresh(objWrapper: any): void {
-        objWrapper.invokeMethodAsync('UpdateStatus', s.paused, s.pending, s.speaking);
+        objWrapper.invokeMethodAsync('UpdateStatus', available, s.paused, s.pending, s.speaking);
     }
 
     export async function getVoices(): Promise<any[]> {

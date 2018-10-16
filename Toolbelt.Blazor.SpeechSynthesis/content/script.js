@@ -12,10 +12,11 @@ var Toolbelt;
     (function (Blazor) {
         var SpeechSynthesis;
         (function (SpeechSynthesis) {
-            const s = window.speechSynthesis;
-            const onVoicesChanged = s.getVoices().length == 0 ? new Promise(resolve => s.addEventListener('voiceschanged', () => resolve())) : null;
+            const s = window.speechSynthesis || { paused: false, pending: false, speaking: false };
+            const available = (typeof s.getVoices) != 'undefined';
+            const onVoicesChanged = (available && s.getVoices().length == 0) ? new Promise(resolve => s.addEventListener('voiceschanged', () => resolve())) : null;
             function refresh(objWrapper) {
-                objWrapper.invokeMethodAsync('UpdateStatus', s.paused, s.pending, s.speaking);
+                objWrapper.invokeMethodAsync('UpdateStatus', available, s.paused, s.pending, s.speaking);
             }
             SpeechSynthesis.refresh = refresh;
             function getVoices() {

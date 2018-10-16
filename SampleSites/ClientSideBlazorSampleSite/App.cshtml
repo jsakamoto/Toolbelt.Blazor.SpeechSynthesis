@@ -2,6 +2,15 @@
 @inject SpeechSynthesis SpeechSynthesis;
 
 <p>
+    <ul>
+        <li>Available ... @SpeechSynthesis.Available</li>
+        <li>Speaking ... @SpeechSynthesis.Speaking</li>
+        <li>Pending ... @SpeechSynthesis.Pending</li>
+        <li>Paused ... @SpeechSynthesis.Paused</li>
+    </ul>
+</p>
+
+<p>
     <select bind="@CurrentVoiceURI">
         @foreach (var voice in Voices)
         {
@@ -29,7 +38,7 @@
     SpeechSynthesisVoice CurrentVoice;
 
     public string CurrentVoiceURI {
-        get {return this.CurrentVoice?.VoiceURI;}
+        get { return this.CurrentVoice?.VoiceURI; }
         set { this.CurrentVoice = this.Voices.FirstOrDefault(v => v.VoiceURI == value); }
     }
 
@@ -84,11 +93,11 @@
         this.SpeechSynthesis.Cancel();
     }
 
-    void OnStart(object sender, EventArgs args) { Console.WriteLine("ON START!"); }
-    void OnBoundary(object sender, EventArgs args) { Console.WriteLine("ON BOUNDARY!"); }
-    void OnMark(object sender, EventArgs args) { Console.WriteLine("ON MARK!"); }
-    void OnPause(object sender, EventArgs args) { Console.WriteLine("ON PAUSE!"); }
-    void OnResume(object sender, EventArgs args) { Console.WriteLine("ON RESUME!"); }
-    void OnEnd(object sender, EventArgs args) { Console.WriteLine("ON END!"); }
-    void OnError(object sender, EventArgs args) { Console.WriteLine("ON ERROR!"); }
+    void OnStart(object sender, EventArgs args) { Console.WriteLine("ON START!"); StateHasChanged(); }
+    void OnBoundary(object sender, EventArgs args) { Console.WriteLine("ON BOUNDARY!"); StateHasChanged(); }
+    void OnMark(object sender, EventArgs args) { Console.WriteLine("ON MARK!"); StateHasChanged(); }
+    void OnPause(object sender, EventArgs args) { Console.WriteLine("ON PAUSE!"); StateHasChanged(); }
+    void OnResume(object sender, EventArgs args) { Console.WriteLine("ON RESUME!"); StateHasChanged(); }
+    void OnEnd(object sender, EventArgs args) { Console.WriteLine("ON END!"); StateHasChanged(); }
+    void OnError(object sender, EventArgs args) { Console.WriteLine("ON ERROR!"); StateHasChanged(); }
 }

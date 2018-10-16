@@ -33,17 +33,20 @@ var Toolbelt;
                 });
             }
             SpeechSynthesis.getVoices = getVoices;
-            function speak(arg) {
-                const utterance = new SpeechSynthesisUtterance();
-                if (typeof arg == 'string')
-                    utterance.text = arg;
-                else {
-                    if (arg.voice != null) {
-                        arg.voice = s.getVoices().find(v => v.voiceURI == arg.voice.voiceURI);
-                    }
-                    Object.assign(utterance, arg);
-                }
-                s.speak(utterance);
+            function speak(sRef, arg, uRef) {
+                const u = new SpeechSynthesisUtterance();
+                if (arg.voice != null)
+                    arg.voice = s.getVoices().find(v => v.voiceURI == arg.voice.voiceURI);
+                Object.assign(u, arg);
+                const types = ["boundary", "end", "error", "mark", "pause", "resume", "start"];
+                const f = function (ev) {
+                    refresh(sRef);
+                    uRef.invokeMethodAsync('InvokeEvent', ev.type);
+                    if (ev.type == 'end' || ev.type == 'error')
+                        types.forEach(t => u.removeEventListener(t, f));
+                };
+                types.forEach(t => u.addEventListener(t, f));
+                s.speak(u);
             }
             SpeechSynthesis.speak = speak;
             function cancel() { s.cancel(); }

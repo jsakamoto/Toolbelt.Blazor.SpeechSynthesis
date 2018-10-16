@@ -34,13 +34,18 @@ namespace Toolbelt.Blazor.SpeechSynthesis
         {
         }
 
+        private DotNetObjectRef GetObjectRef()
+        {
+            if (_ObjectRefOfThis == null) _ObjectRefOfThis = new DotNetObjectRef(this);
+            return _ObjectRefOfThis;
+        }
+
         private SpeechSynthesis Refresh()
         {
             if ((LastRefreshTask?.IsCompleted ?? true) == true)
             {
                 LastRefreshTask?.Dispose();
-                if (_ObjectRefOfThis == null) _ObjectRefOfThis = new DotNetObjectRef(this);
-                LastRefreshTask = JSRuntime.Current.InvokeAsync<object>(Namespace + ".refresh", _ObjectRefOfThis);
+                LastRefreshTask = JSRuntime.Current.InvokeAsync<object>(Namespace + ".refresh", this.GetObjectRef());
             }
             return this;
         }
@@ -66,9 +71,12 @@ namespace Toolbelt.Blazor.SpeechSynthesis
             return _Voices;
         }
 
-        public void Speak(string text) => JSRuntime.Current.InvokeAsync<object>(Namespace + ".speak", text);
+        public void Speak(string text) => this.Speak(new SpeechSynthesisUtterance { Text = text });
 
-        public void Speak(SpeechSynthesisUtterance utterance) => JSRuntime.Current.InvokeAsync<object>(Namespace + ".speak", utterance);
+        public void Speak(SpeechSynthesisUtterance utterance)
+        {
+            JSRuntime.Current.InvokeAsync<object>(Namespace + ".speak", this.GetObjectRef(), utterance, utterance.GetObjectRef());
+        }
 
         public void Cancel() => JSRuntime.Current.InvokeAsync<object>(Namespace + ".cancel");
 

@@ -19,16 +19,20 @@
         }));
     }
 
-    export function speak(arg: string | SpeechSynthesisUtterance): void {
-        const utterance = new SpeechSynthesisUtterance();
-        if (typeof arg == 'string') utterance.text = arg;
-        else {
-            if (arg.voice != null) {
-                arg.voice = s.getVoices().find(v => v.voiceURI == arg.voice.voiceURI);
-            }
-            Object.assign(utterance, arg);
+    export function speak(sRef: any, arg: SpeechSynthesisUtterance, uRef: any): void {
+        const u = new SpeechSynthesisUtterance();
+        if (arg.voice != null) arg.voice = s.getVoices().find(v => v.voiceURI == arg.voice.voiceURI);
+        Object.assign(u, arg);
+
+        const types = ["boundary", "end", "error", "mark", "pause", "resume", "start"];
+        const f = function (ev: Event) {
+            refresh(sRef);
+            uRef.invokeMethodAsync('InvokeEvent', ev.type);
+            if (ev.type == 'end' || ev.type == 'error') types.forEach(t => u.removeEventListener(t, f));
         }
-        s.speak(utterance);
+        types.forEach(t => u.addEventListener(t, f));
+
+        s.speak(u);
     }
 
     export function cancel(): void { s.cancel(); }

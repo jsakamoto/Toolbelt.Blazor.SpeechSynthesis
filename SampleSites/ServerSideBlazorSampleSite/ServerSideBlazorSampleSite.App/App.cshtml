@@ -20,7 +20,7 @@
     <button onclick="@onClickCancelButton">Cancel</button>
 </p>
 
-@functions 
+@functions
 {
     string Text = "Hello World.";
 
@@ -28,8 +28,9 @@
 
     SpeechSynthesisVoice CurrentVoice;
 
-    public string CurrentVoiceURI {
-        get {return this.CurrentVoice?.VoiceURI;}
+    public string CurrentVoiceURI
+    {
+        get { return this.CurrentVoice?.VoiceURI; }
         set { this.CurrentVoice = this.Voices.FirstOrDefault(v => v.VoiceURI == value); }
     }
 
@@ -39,7 +40,8 @@
         this.CurrentVoice = this.Voices.FirstOrDefault(v => v.Default);
     }
 
-    void onClickSpeakButton() {
+    void onClickSpeakButton()
+    {
         //this.SpeechSynthesis.Speak(this.Text);
         var utterancet = new SpeechSynthesisUtterance
         {
@@ -64,7 +66,8 @@
     {
         Console.WriteLine("onClickPauseButton");
         Console.WriteLine($"Speaking is [{this.SpeechSynthesis.Speaking}]");
-        if (this.SpeechSynthesis.Speaking) {
+        if (this.SpeechSynthesis.Speaking)
+        {
             this.SpeechSynthesis.Pause();
         }
     }

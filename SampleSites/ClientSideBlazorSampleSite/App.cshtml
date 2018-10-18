@@ -24,6 +24,7 @@
 </p>
 <p>
     <button onclick="@onClickSpeakButton">Speak</button>
+    <button onclick="@onClickSpeakByCachedButton">Speak by Cached</button>
     <button onclick="@onClickPauseButton">Pause</button>
     <button onclick="@onClickResumeButton">Resume</button>
     <button onclick="@onClickCancelButton">Cancel</button>
@@ -44,6 +45,8 @@
 {
     string Text = "Hello World.";
 
+    SpeechSynthesisUtterance CachedUtterancet = new SpeechSynthesisUtterance();
+
     List<string> Logs = new List<string>();
 
     IEnumerable<SpeechSynthesisVoice> Voices = new SpeechSynthesisVoice[0];
@@ -63,15 +66,26 @@
 
     void onClickSpeakButton() {
         //this.SpeechSynthesis.Speak(this.Text);
-        var utterancet = new SpeechSynthesisUtterance
-        {
-            Text = this.Text,
-            //Lang = "ja-JP",
-            Pitch = 1.0,
-            Rate = 0.5,
-            Volume = 1,
-            Voice = this.CurrentVoice
-        };
+
+        var utterancet = new SpeechSynthesisUtterance();
+        SetupUtterancet(utterancet);
+        this.SpeechSynthesis.Speak(utterancet);
+    }
+
+    void onClickSpeakByCachedButton() {
+        SetupUtterancet(this.CachedUtterancet);
+        this.SpeechSynthesis.Speak(this.CachedUtterancet);
+    }
+
+    void SetupUtterancet(SpeechSynthesisUtterance utterancet)
+    {
+        //utterancet.Lang = "ja-JP";
+        utterancet.Text = this.Text;
+        utterancet.Pitch = 1.0;
+        utterancet.Rate = 0.5;
+        utterancet.Volume = 1;
+        utterancet.Voice = this.CurrentVoice;
+
         utterancet.Start += OnStart;
         utterancet.Boundary += OnBoundary;
         utterancet.Mark += OnMark;
@@ -79,7 +93,6 @@
         utterancet.Resume += OnResume;
         utterancet.End += OnEnd;
         utterancet.Error += OnError;
-        this.SpeechSynthesis.Speak(utterancet);
     }
 
     void onClickPauseButton()

@@ -39,6 +39,8 @@ namespace Toolbelt.Blazor.SpeechSynthesis
 
         private DotNetObjectRef _ObjectRef;
 
+        private int _ObjectRefCounter = 0;
+
         public SpeechSynthesisUtterance()
         {
             _Id = Guid.NewGuid().ToString();
@@ -52,14 +54,19 @@ namespace Toolbelt.Blazor.SpeechSynthesis
 
         internal DotNetObjectRef GetObjectRef()
         {
-            if (_ObjectRef == null) _ObjectRef = new DotNetObjectRef(this);
+            _ObjectRefCounter++;
+            if (_ObjectRefCounter == 1) _ObjectRef = new DotNetObjectRef(this);
             return _ObjectRef;
         }
 
         private void ReleaseObjectRef()
         {
-            _ObjectRef.Dispose();
-            _ObjectRef = null;
+            _ObjectRefCounter--;
+            if (_ObjectRefCounter == 0)
+            {
+                _ObjectRef.Dispose();
+                _ObjectRef = null;
+            }
         }
 
         [JSInvokable(nameof(InvokeEvent)), EditorBrowsable(EditorBrowsableState.Never)]
@@ -88,6 +95,9 @@ namespace Toolbelt.Blazor.SpeechSynthesis
                     break;
                 case "error":
                     Error?.Invoke(this, EventArgs.Empty);
+                    ReleaseObjectRef();
+                    break;
+                case "cancel":
                     ReleaseObjectRef();
                     break;
                 default:

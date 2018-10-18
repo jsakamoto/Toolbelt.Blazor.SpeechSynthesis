@@ -30,7 +30,6 @@
     <button onclick="@onClickCancelButton">Cancel</button>
     <button onclick="@onClickGC">GC</button>
     <button onclick="@onClickClearLog">Clear Log</button>
-    <button onclick="@onClickReport">Report</button>
 </p>
 
 <div>
@@ -129,14 +128,6 @@
     {
         this.Logs.Clear();
         this.StateHasChanged();
-    }
-
-    void onClickReport()
-    {
-        foreach (var id in SpeechSynthesisUtterance.InstanceIds.DefaultIfEmpty("(nothing)"))
-        {
-            this.WriteLog(id);
-        }
     }
 
     void OnStart(object sender, EventArgs args) { Console.WriteLine("ON START!"); StateHasChanged(); }

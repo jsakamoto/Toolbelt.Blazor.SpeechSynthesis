@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using Microsoft.JSInterop;
 
@@ -7,10 +6,6 @@ namespace Toolbelt.Blazor.SpeechSynthesis
 {
     public class SpeechSynthesisUtterance
     {
-        public static List<string> InstanceIds { get; } = new List<string>();
-
-        private string _Id;
-
         public string Lang { get; set; } = "";
 
         public double Pitch { get; set; } = 1.0;
@@ -40,17 +35,6 @@ namespace Toolbelt.Blazor.SpeechSynthesis
         private DotNetObjectRef _ObjectRef;
 
         private int _ObjectRefCounter = 0;
-
-        public SpeechSynthesisUtterance()
-        {
-            _Id = Guid.NewGuid().ToString();
-            SpeechSynthesisUtterance.InstanceIds.Add(_Id);
-        }
-
-        ~SpeechSynthesisUtterance()
-        {
-            SpeechSynthesisUtterance.InstanceIds.Remove(_Id);
-        }
 
         internal DotNetObjectRef GetObjectRef()
         {

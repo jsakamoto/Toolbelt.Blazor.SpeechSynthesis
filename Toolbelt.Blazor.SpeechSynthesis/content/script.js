@@ -1,11 +1,3 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var Toolbelt;
 (function (Toolbelt) {
     var Blazor;
@@ -13,44 +5,51 @@ var Toolbelt;
         var SpeechSynthesis;
         (function (SpeechSynthesis) {
             const s = window.speechSynthesis || { paused: false, pending: false, speaking: false };
-            const available = (typeof s.getVoices) != 'undefined';
-            const onVoicesChanged = (available && s.getVoices().length == 0) ? new Promise(resolve => s.addEventListener('voiceschanged', () => resolve())) : null;
+            const available = typeof s.getVoices !== 'undefined';
+            const onVoicesChanged = (available && s.getVoices().length === 0) ? new Promise(resolve => s.addEventListener('voiceschanged', () => resolve())) : Promise.resolve();
+            let queue = [];
             function refresh(objWrapper) {
                 objWrapper.invokeMethodAsync('UpdateStatus', available, s.paused, s.pending, s.speaking);
             }
             SpeechSynthesis.refresh = refresh;
             function getVoices() {
-                return __awaiter(this, void 0, void 0, function* () {
-                    if (onVoicesChanged != null) {
-                        yield onVoicesChanged;
-                    }
-                    return s.getVoices().map(v => ({
-                        default: v.default,
-                        lang: v.lang,
-                        localService: v.localService,
-                        name: v.name,
-                        voiceURI: v.voiceURI
-                    }));
-                });
+                return onVoicesChanged
+                    .then(() => s.getVoices().map(v => ({
+                    default: v.default,
+                    lang: v.lang,
+                    localService: v.localService,
+                    name: v.name,
+                    voiceURI: v.voiceURI
+                })));
             }
             SpeechSynthesis.getVoices = getVoices;
             function speak(sRef, arg, uRef) {
                 const u = new SpeechSynthesisUtterance();
-                if (arg.voice != null)
-                    arg.voice = s.getVoices().find(v => v.voiceURI == arg.voice.voiceURI);
+                if (arg.voice !== null)
+                    arg.voice = s.getVoices().find(v => v.voiceURI === arg.voice.voiceURI);
                 Object.assign(u, arg);
                 const types = ["boundary", "end", "error", "mark", "pause", "resume", "start"];
                 const f = function (ev) {
                     refresh(sRef);
                     uRef.invokeMethodAsync('InvokeEvent', ev.type);
-                    if (ev.type == 'end' || ev.type == 'error')
+                    if (ev.type === 'end' || ev.type === 'error' || ev.type === 'cancel') {
                         types.forEach(t => u.removeEventListener(t, f));
+                        queue = queue.filter(q => q.f !== f);
+                    }
                 };
                 types.forEach(t => u.addEventListener(t, f));
+                queue.push({ f });
                 s.speak(u);
+                setTimeout(() => {
+                    const cancellers = queue.filter(q => q.cancel === true);
+                    cancellers.forEach(c => c.f({ type: 'cancel' }));
+                }, 0);
             }
             SpeechSynthesis.speak = speak;
-            function cancel() { s.cancel(); }
+            function cancel() {
+                s.cancel();
+                queue.forEach(q => q.cancel = true);
+            }
             SpeechSynthesis.cancel = cancel;
             function pause() { s.pause(); }
             SpeechSynthesis.pause = pause;

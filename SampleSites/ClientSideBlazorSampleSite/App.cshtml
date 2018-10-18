@@ -24,14 +24,29 @@
 </p>
 <p>
     <button onclick="@onClickSpeakButton">Speak</button>
+    <button onclick="@onClickSpeakByCachedButton">Speak by Cached</button>
     <button onclick="@onClickPauseButton">Pause</button>
     <button onclick="@onClickResumeButton">Resume</button>
     <button onclick="@onClickCancelButton">Cancel</button>
+    <button onclick="@onClickGC">GC</button>
+    <button onclick="@onClickClearLog">Clear Log</button>
 </p>
+
+<div>
+    @foreach (var log in Logs)
+    {
+        <div>@log</div>
+    }
+</div>
+
 
 @functions 
 {
     string Text = "Hello World.";
+
+    SpeechSynthesisUtterance CachedUtterancet = new SpeechSynthesisUtterance();
+
+    List<string> Logs = new List<string>();
 
     IEnumerable<SpeechSynthesisVoice> Voices = new SpeechSynthesisVoice[0];
 
@@ -50,15 +65,26 @@
 
     void onClickSpeakButton() {
         //this.SpeechSynthesis.Speak(this.Text);
-        var utterancet = new SpeechSynthesisUtterance
-        {
-            Text = this.Text,
-            //Lang = "ja-JP",
-            Pitch = 1.0,
-            Rate = 0.5,
-            Volume = 1,
-            Voice = this.CurrentVoice
-        };
+
+        var utterancet = new SpeechSynthesisUtterance();
+        SetupUtterancet(utterancet);
+        this.SpeechSynthesis.Speak(utterancet);
+    }
+
+    void onClickSpeakByCachedButton() {
+        SetupUtterancet(this.CachedUtterancet);
+        this.SpeechSynthesis.Speak(this.CachedUtterancet);
+    }
+
+    void SetupUtterancet(SpeechSynthesisUtterance utterancet)
+    {
+        //utterancet.Lang = "ja-JP";
+        utterancet.Text = this.Text;
+        utterancet.Pitch = 1.0;
+        utterancet.Rate = 0.5;
+        utterancet.Volume = 1;
+        utterancet.Voice = this.CurrentVoice;
+
         utterancet.Start += OnStart;
         utterancet.Boundary += OnBoundary;
         utterancet.Mark += OnMark;
@@ -66,7 +92,6 @@
         utterancet.Resume += OnResume;
         utterancet.End += OnEnd;
         utterancet.Error += OnError;
-        this.SpeechSynthesis.Speak(utterancet);
     }
 
     void onClickPauseButton()
@@ -93,6 +118,18 @@
         this.SpeechSynthesis.Cancel();
     }
 
+    void onClickGC()
+    {
+        GC.Collect();
+        this.WriteLog("GC");
+    }
+
+    void onClickClearLog()
+    {
+        this.Logs.Clear();
+        this.StateHasChanged();
+    }
+
     void OnStart(object sender, EventArgs args) { Console.WriteLine("ON START!"); StateHasChanged(); }
     void OnBoundary(object sender, EventArgs args) { Console.WriteLine("ON BOUNDARY!"); StateHasChanged(); }
     void OnMark(object sender, EventArgs args) { Console.WriteLine("ON MARK!"); StateHasChanged(); }
@@ -100,4 +137,10 @@
     void OnResume(object sender, EventArgs args) { Console.WriteLine("ON RESUME!"); StateHasChanged(); }
     void OnEnd(object sender, EventArgs args) { Console.WriteLine("ON END!"); StateHasChanged(); }
     void OnError(object sender, EventArgs args) { Console.WriteLine("ON ERROR!"); StateHasChanged(); }
+
+    void WriteLog(string text)
+    {
+        this.Logs = new[] { $"{DateTime.UtcNow:HH:mm:ss} - {text}" }.Concat(this.Logs).Take(20).ToList();
+        StateHasChanged();
+    }
 }

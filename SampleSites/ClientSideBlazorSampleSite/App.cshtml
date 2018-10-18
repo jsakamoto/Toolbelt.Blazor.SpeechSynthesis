@@ -27,11 +27,24 @@
     <button onclick="@onClickPauseButton">Pause</button>
     <button onclick="@onClickResumeButton">Resume</button>
     <button onclick="@onClickCancelButton">Cancel</button>
+    <button onclick="@onClickGC">GC</button>
+    <button onclick="@onClickClearLog">Clear Log</button>
+    <button onclick="@onClickReport">Report</button>
 </p>
+
+<div>
+    @foreach (var log in Logs)
+    {
+        <div>@log</div>
+    }
+</div>
+
 
 @functions 
 {
     string Text = "Hello World.";
+
+    List<string> Logs = new List<string>();
 
     IEnumerable<SpeechSynthesisVoice> Voices = new SpeechSynthesisVoice[0];
 
@@ -93,6 +106,26 @@
         this.SpeechSynthesis.Cancel();
     }
 
+    void onClickGC()
+    {
+        GC.Collect();
+        this.WriteLog("GC");
+    }
+
+    void onClickClearLog()
+    {
+        this.Logs.Clear();
+        this.StateHasChanged();
+    }
+
+    void onClickReport()
+    {
+        foreach (var id in SpeechSynthesisUtterance.InstanceIds.DefaultIfEmpty("(nothing)"))
+        {
+            this.WriteLog(id);
+        }
+    }
+
     void OnStart(object sender, EventArgs args) { Console.WriteLine("ON START!"); StateHasChanged(); }
     void OnBoundary(object sender, EventArgs args) { Console.WriteLine("ON BOUNDARY!"); StateHasChanged(); }
     void OnMark(object sender, EventArgs args) { Console.WriteLine("ON MARK!"); StateHasChanged(); }
@@ -100,4 +133,10 @@
     void OnResume(object sender, EventArgs args) { Console.WriteLine("ON RESUME!"); StateHasChanged(); }
     void OnEnd(object sender, EventArgs args) { Console.WriteLine("ON END!"); StateHasChanged(); }
     void OnError(object sender, EventArgs args) { Console.WriteLine("ON ERROR!"); StateHasChanged(); }
+
+    void WriteLog(string text)
+    {
+        this.Logs = new[] { $"{DateTime.UtcNow:HH:mm:ss} - {text}" }.Concat(this.Logs).Take(20).ToList();
+        StateHasChanged();
+    }
 }

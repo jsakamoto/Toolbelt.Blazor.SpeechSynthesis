@@ -164,7 +164,7 @@
 
     void WriteLog(string text)
     {
-        this.Logs = new[] { $"{DateTime.UtcNow:HH:mm:ss.fff} - {text}" }.Concat(this.Logs).Take(20).ToList();
+        this.Logs = new[] { $"{DateTime.Now:HH:mm:ss.fff} - {text}" }.Concat(this.Logs).Take(20).ToList();
         StateHasChanged();
     }
 }

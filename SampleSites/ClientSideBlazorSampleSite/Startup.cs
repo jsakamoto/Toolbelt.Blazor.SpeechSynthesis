@@ -13,6 +13,7 @@ namespace ClientSideBlazorSampleSite
 
         public void Configure(IBlazorApplicationBuilder app)
         {
+            app.UseLocalTimeZone();
             app.AddComponent<App>("app");
         }
     }

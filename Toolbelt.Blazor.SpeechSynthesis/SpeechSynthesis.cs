@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.JSInterop;
 
 namespace Toolbelt.Blazor.SpeechSynthesis
 {
+    /// <summary>
+    /// The controller interface for the speech service of the Web Speech API.
+    /// </summary>
     public class SpeechSynthesis
     {
         private static readonly string Namespace = "Toolbelt.Blazor.SpeechSynthesis";
@@ -26,12 +27,24 @@ namespace Toolbelt.Blazor.SpeechSynthesis
 
         private List<SpeechSynthesisVoice> _Voices;
 
+        /// <summary>
+        /// Gets a value that indicates whether the Web Speech API is available or not.
+        /// </summary>
         public bool Available => this.Refresh()._Available;
 
+        /// <summary>
+        /// Gets a value that indicates whether the SpeechSynthesis object is in a paused state or not.
+        /// </summary>
         public bool Paused => this.Refresh()._Paused;
 
+        /// <summary>
+        /// Gets a value that indicates whether the utterance queue contains as-yet-unspoken utterances or not.
+        /// </summary>
         public bool Pending => this.Refresh()._Pending;
 
+        /// <summary>
+        /// Gets a value that indicates whether an utterance is currently in the process of being spoken (includes SpeechSynthesis is in a paused state) or not.
+        /// </summary>
         public bool Speaking => this.Refresh()._Speaking;
 
         internal SpeechSynthesis()
@@ -63,10 +76,12 @@ namespace Toolbelt.Blazor.SpeechSynthesis
             this._Speaking = speaking;
         }
 
+        /// <summary>
+        /// Returns a collection of SpeechSynthesisVoice objects representing all the available voices on the current device.
+        /// </summary>
         public async Task<IReadOnlyCollection<SpeechSynthesisVoice>> GetVoicesAsync()
         {
             if (_Voices == null) _Voices = new List<SpeechSynthesisVoice>();
-            if (!Available) return _Voices;
 
             var latestVoices = await JSRuntime.Current.InvokeAsync<SpeechSynthesisVoiceInternal[]>(Namespace + ".getVoices");
             var toAddVoices = latestVoices.Where(p1 => !_Voices.Any(p2 => p1.VoiceURI == p2.VoiceURI)).ToArray();
@@ -78,17 +93,34 @@ namespace Toolbelt.Blazor.SpeechSynthesis
             return _Voices;
         }
 
+        /// <summary>
+        /// Adds an utterance initialized with specified text to the utterance queue.
+        /// <para>it will be spoken when any other utterances queued before it have been spoken.</para>
+        /// </summary>
         public void Speak(string text) => this.Speak(new SpeechSynthesisUtterance { Text = text });
 
+        /// <summary>
+        /// Adds an utterance to the utterance queue.
+        /// <para>it will be spoken when any other utterances queued before it have been spoken.</para>
+        /// </summary>
         public void Speak(SpeechSynthesisUtterance utterance)
         {
             if (Available) JSRuntime.Current.InvokeAsync<object>(Namespace + ".speak", this.GetObjectRef(), utterance, utterance.GetObjectRef());
         }
 
+        /// <summary>
+        /// Removes all utterances from the utterance queue.
+        /// </summary>
         public void Cancel() { if (Available) JSRuntime.Current.InvokeAsync<object>(Namespace + ".cancel"); }
 
+        /// <summary>
+        /// Puts the SpeechSynthesis object into a paused state.
+        /// </summary>
         public void Pause() { if (Available) JSRuntime.Current.InvokeAsync<object>(Namespace + ".pause"); }
 
+        /// <summary>
+        /// Puts the SpeechSynthesis object into a non-paused state if it was already paused.
+        /// </summary>
         public void Resume() { if (Available) JSRuntime.Current.InvokeAsync<object>(Namespace + ".resume"); }
     }
 }

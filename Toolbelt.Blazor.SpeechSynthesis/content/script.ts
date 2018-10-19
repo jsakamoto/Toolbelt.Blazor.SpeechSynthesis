@@ -24,6 +24,7 @@
     }
 
     export function getVoices(): Promise<any[]> {
+        if (!available) return Promise.resolve([] as any[]);
         return onVoicesChanged
             .then(() => s.getVoices().map(v => ({
                 default: v.default,
@@ -35,6 +36,7 @@
     }
 
     export function speak(sRef: DotNetObjectRef, arg: SpeechSynthesisUtterance, uRef: DotNetObjectRef): void {
+        if (!available) return;
         const u = new SpeechSynthesisUtterance();
         if (arg.voice !== null) arg.voice = s.getVoices().find(v => v.voiceURI === arg.voice.voiceURI);
         Object.assign(u, arg);
@@ -61,11 +63,12 @@
     }
 
     export function cancel(): void {
+        if (!available) return;
         s.cancel();
         queue.forEach(q => q.cancel = true);
     }
 
-    export function pause(): void { s.pause(); }
+    export function pause(): void { if (available) s.pause(); }
 
-    export function resume(): void { s.resume(); }
+    export function resume(): void { if (available) s.resume(); }
 }

@@ -13,6 +13,8 @@ var Toolbelt;
             }
             SpeechSynthesis.refresh = refresh;
             function getVoices() {
+                if (!available)
+                    return Promise.resolve([]);
                 return onVoicesChanged
                     .then(() => s.getVoices().map(v => ({
                     default: v.default,
@@ -24,6 +26,8 @@ var Toolbelt;
             }
             SpeechSynthesis.getVoices = getVoices;
             function speak(sRef, arg, uRef) {
+                if (!available)
+                    return;
                 const u = new SpeechSynthesisUtterance();
                 if (arg.voice !== null)
                     arg.voice = s.getVoices().find(v => v.voiceURI === arg.voice.voiceURI);
@@ -47,13 +51,17 @@ var Toolbelt;
             }
             SpeechSynthesis.speak = speak;
             function cancel() {
+                if (!available)
+                    return;
                 s.cancel();
                 queue.forEach(q => q.cancel = true);
             }
             SpeechSynthesis.cancel = cancel;
-            function pause() { s.pause(); }
+            function pause() { if (available)
+                s.pause(); }
             SpeechSynthesis.pause = pause;
-            function resume() { s.resume(); }
+            function resume() { if (available)
+                s.resume(); }
             SpeechSynthesis.resume = resume;
         })(SpeechSynthesis = Blazor.SpeechSynthesis || (Blazor.SpeechSynthesis = {}));
     })(Blazor = Toolbelt.Blazor || (Toolbelt.Blazor = {}));

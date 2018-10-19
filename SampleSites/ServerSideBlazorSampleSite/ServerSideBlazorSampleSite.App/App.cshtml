@@ -1,28 +1,70 @@
-﻿@using Toolbelt.Blazor.SpeechSynthesis
-@inject SpeechSynthesis SpeechSynthesis;
+﻿@{/* You component .cshtml*/}
+@using Toolbelt.Blazor.SpeechSynthesis; @{/* Add these tow lines. */}
+@inject SpeechSynthesis SpeechSynthesis
 
 <p>
+    Voice:
     <select bind="@CurrentVoiceURI">
+        <option value="(unset)">(unset)</option>
         @foreach (var voice in Voices)
         {
-            <option value="@voice.VoiceURI">@voice.Name (@voice.VoiceURI)</option>
+            <option value="@voice.VoiceURI">@voice.Name</option>
         }
     </select>
 </p>
 
 <p>
+    Text:
     <textarea bind="@Text"></textarea>
 </p>
 <p>
+    Language (BCP47): <input type="text" bind="@Lang" />
+</p>
+
+<div>
+    <div>Picth: @Pitch.ToString("0.0") <input type="range" min="0.0" max="2.0" step="0.1" bind="@Pitch" /> <button onclick="@(() => this.Pitch = 1.0)">reset</button></div>
+    <div>Rate: @Rate.ToString("0.0") <input type="range" min="0.1" max="10.0" step="0.1" bind="@Rate" /> <button onclick="@(() => this.Rate = 1.0)">reset</button></div>
+    <div>Volume: @Volume.ToString("0.0") <input type="range" min="0.0" max="1.0" step="0.1" bind="@Volume" /> <button onclick="@(() => this.Volume = 1.0)">reset</button></div>
+</div>
+
+<p>
     <button onclick="@onClickSpeakButton">Speak</button>
+    <button onclick="@onClickSpeakByCachedButton">Speak by Cached</button>
     <button onclick="@onClickPauseButton">Pause</button>
     <button onclick="@onClickResumeButton">Resume</button>
     <button onclick="@onClickCancelButton">Cancel</button>
+    <button onclick="@onClickGC">GC</button>
+    <button onclick="@onClickClearLog">Clear Log</button>
 </p>
+
+<div>
+    <ul>
+        <li>Available ... @SpeechSynthesis.Available</li>
+        <li>Speaking ... @SpeechSynthesis.Speaking</li>
+        <li>Pending ... @SpeechSynthesis.Pending</li>
+        <li>Paused ... @SpeechSynthesis.Paused</li>
+    </ul>
+</div>
+
+<div>
+    @foreach (var log in Logs)
+    {
+        <div>@log</div>
+    }
+</div>
+
 
 @functions
 {
     string Text = "Hello World.";
+    string Lang = "";
+    double Pitch = 1.0;
+    double Rate = 1.0;
+    double Volume = 1.0;
+
+    SpeechSynthesisUtterance CachedUtterancet = new SpeechSynthesisUtterance();
+
+    List<string> Logs = new List<string>();
 
     IEnumerable<SpeechSynthesisVoice> Voices = new SpeechSynthesisVoice[0];
 
@@ -30,28 +72,42 @@
 
     public string CurrentVoiceURI
     {
-        get { return this.CurrentVoice?.VoiceURI; }
+        get { return this.CurrentVoice?.VoiceURI ?? "(unset)"; }
         set { this.CurrentVoice = this.Voices.FirstOrDefault(v => v.VoiceURI == value); }
     }
 
     protected async override Task OnInitAsync()
     {
+        HandleEvents(this.CachedUtterancet);
         this.Voices = await this.SpeechSynthesis.GetVoicesAsync();
-        this.CurrentVoice = this.Voices.FirstOrDefault(v => v.Default);
     }
 
     void onClickSpeakButton()
     {
-        //this.SpeechSynthesis.Speak(this.Text);
-        var utterancet = new SpeechSynthesisUtterance
-        {
-            Text = this.Text,
-            //Lang = "ja-JP",
-            Pitch = 1.0,
-            Rate = 0.5,
-            Volume = 1,
-            Voice = this.CurrentVoice
-        };
+        var utterancet = new SpeechSynthesisUtterance();
+        HandleEvents(utterancet);
+        SetupUtterancet(utterancet);
+        this.SpeechSynthesis.Speak(utterancet);
+    }
+
+    void onClickSpeakByCachedButton()
+    {
+        SetupUtterancet(this.CachedUtterancet);
+        this.SpeechSynthesis.Speak(this.CachedUtterancet);
+    }
+
+    void SetupUtterancet(SpeechSynthesisUtterance utterancet)
+    {
+        utterancet.Text = this.Text;
+        utterancet.Lang = this.Lang;
+        utterancet.Pitch = this.Pitch;
+        utterancet.Rate = this.Rate;
+        utterancet.Volume = this.Volume;
+        utterancet.Voice = this.CurrentVoice;
+    }
+
+    void HandleEvents(SpeechSynthesisUtterance utterancet)
+    {
         utterancet.Start += OnStart;
         utterancet.Boundary += OnBoundary;
         utterancet.Mark += OnMark;
@@ -59,12 +115,11 @@
         utterancet.Resume += OnResume;
         utterancet.End += OnEnd;
         utterancet.Error += OnError;
-        this.SpeechSynthesis.Speak(utterancet);
     }
 
     void onClickPauseButton()
     {
-        Console.WriteLine("onClickPauseButton");
+        this.WriteLog("onClickPauseButton");
         Console.WriteLine($"Speaking is [{this.SpeechSynthesis.Speaking}]");
         if (this.SpeechSynthesis.Speaking)
         {
@@ -74,7 +129,7 @@
 
     void onClickResumeButton()
     {
-        Console.WriteLine("onClickResumeButton");
+        this.WriteLog("onClickResumeButton");
         Console.WriteLine($"Paused is [{this.SpeechSynthesis.Paused}]");
         if (this.SpeechSynthesis.Paused)
         {
@@ -87,11 +142,29 @@
         this.SpeechSynthesis.Cancel();
     }
 
-    void OnStart(object sender, EventArgs args) { Console.WriteLine("ON START!"); }
-    void OnBoundary(object sender, EventArgs args) { Console.WriteLine("ON BOUNDARY!"); }
-    void OnMark(object sender, EventArgs args) { Console.WriteLine("ON MARK!"); }
-    void OnPause(object sender, EventArgs args) { Console.WriteLine("ON PAUSE!"); }
-    void OnResume(object sender, EventArgs args) { Console.WriteLine("ON RESUME!"); }
-    void OnEnd(object sender, EventArgs args) { Console.WriteLine("ON END!"); }
-    void OnError(object sender, EventArgs args) { Console.WriteLine("ON ERROR!"); }
+    void onClickGC()
+    {
+        GC.Collect();
+        this.WriteLog("GC");
+    }
+
+    void onClickClearLog()
+    {
+        this.Logs.Clear();
+        this.StateHasChanged();
+    }
+
+    void OnStart(object sender, EventArgs args) { this.WriteLog("ON START!"); }
+    void OnBoundary(object sender, EventArgs args) { this.WriteLog("ON BOUNDARY!"); }
+    void OnMark(object sender, EventArgs args) { this.WriteLog("ON MARK!"); }
+    void OnPause(object sender, EventArgs args) { this.WriteLog("ON PAUSE!"); }
+    void OnResume(object sender, EventArgs args) { this.WriteLog("ON RESUME!"); }
+    void OnEnd(object sender, EventArgs args) { this.WriteLog("ON END!"); }
+    void OnError(object sender, EventArgs args) { this.WriteLog("ON ERROR!"); }
+
+    void WriteLog(string text)
+    {
+        this.Logs = new[] { $"{DateTime.UtcNow:HH:mm:ss.fff} - {text}" }.Concat(this.Logs).Take(20).ToList();
+        StateHasChanged();
+    }
 }

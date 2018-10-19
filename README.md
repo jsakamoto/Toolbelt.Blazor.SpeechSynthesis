@@ -77,7 +77,7 @@ You can also speak with detail parameters, such as picth, rate, volume, by using
 
 If you want to chose type of voices, you can do it with `GetVoicesAsync()` method of `SpeechSynthesis` service instance.
 
-```chsrap
+```csharp
   IEnumerable<SpeechSynthesisVoice> Voices;
 
   protected async override Task OnInitAsync()

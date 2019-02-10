@@ -94,6 +94,12 @@ If you want to chose type of voices, you can do it with `GetVoicesAsync()` metho
   }
 ```
 
+## Release Note
+
+- **v.2.0.0** - BREAKING CHANGE: Support Blazor v.0.8.0 (not compatible with v.0.7.0 or before.)
+- **v.1.0.0** - 1st release.
+
+
 ## License
 
 [Mozilla Public License Version 2.0](https://github.com/jsakamoto/Toolbelt.Blazor.SpeechSynthesis/blob/master/LICENSE)

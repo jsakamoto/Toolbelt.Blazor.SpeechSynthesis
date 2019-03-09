@@ -13,6 +13,8 @@ namespace Toolbelt.Blazor.SpeechSynthesis
     {
         private static readonly string Namespace = "Toolbelt.Blazor.SpeechSynthesis";
 
+        private readonly IJSRuntime JSRuntime;
+
         private Task LastRefreshTask = null;
 
         private DotNetObjectRef _ObjectRefOfThis;
@@ -47,8 +49,9 @@ namespace Toolbelt.Blazor.SpeechSynthesis
         /// </summary>
         public bool Speaking => this.Refresh()._Speaking;
 
-        internal SpeechSynthesis()
+        internal SpeechSynthesis(IJSRuntime jSRuntime)
         {
+            this.JSRuntime = jSRuntime;
         }
 
         private DotNetObjectRef GetObjectRef()
@@ -62,7 +65,7 @@ namespace Toolbelt.Blazor.SpeechSynthesis
             if ((LastRefreshTask?.IsCompleted ?? true) == true)
             {
                 LastRefreshTask?.Dispose();
-                LastRefreshTask = JSRuntime.Current.InvokeAsync<object>(Namespace + ".refresh", this.GetObjectRef());
+                LastRefreshTask = JSRuntime.InvokeAsync<object>(Namespace + ".refresh", this.GetObjectRef());
             }
             return this;
         }
@@ -83,7 +86,7 @@ namespace Toolbelt.Blazor.SpeechSynthesis
         {
             if (_Voices == null) _Voices = new List<SpeechSynthesisVoice>();
 
-            var latestVoices = await JSRuntime.Current.InvokeAsync<SpeechSynthesisVoiceInternal[]>(Namespace + ".getVoices");
+            var latestVoices = await JSRuntime.InvokeAsync<SpeechSynthesisVoiceInternal[]>(Namespace + ".getVoices");
             var toAddVoices = latestVoices.Where(p1 => !_Voices.Any(p2 => p1.VoiceURI == p2.VoiceURI)).ToArray();
             var toRemoveVoices = _Voices.Where(p1 => !latestVoices.Any(p2 => p1.VoiceURI == p2.VoiceURI)).ToArray();
 
@@ -105,22 +108,22 @@ namespace Toolbelt.Blazor.SpeechSynthesis
         /// </summary>
         public void Speak(SpeechSynthesisUtterance utterance)
         {
-            if (Available) JSRuntime.Current.InvokeAsync<object>(Namespace + ".speak", this.GetObjectRef(), utterance, utterance.GetObjectRef());
+            if (Available) JSRuntime.InvokeAsync<object>(Namespace + ".speak", this.GetObjectRef(), utterance, utterance.GetObjectRef());
         }
 
         /// <summary>
         /// Removes all utterances from the utterance queue.
         /// </summary>
-        public void Cancel() { if (Available) JSRuntime.Current.InvokeAsync<object>(Namespace + ".cancel"); }
+        public void Cancel() { if (Available) JSRuntime.InvokeAsync<object>(Namespace + ".cancel"); }
 
         /// <summary>
         /// Puts the SpeechSynthesis object into a paused state.
         /// </summary>
-        public void Pause() { if (Available) JSRuntime.Current.InvokeAsync<object>(Namespace + ".pause"); }
+        public void Pause() { if (Available) JSRuntime.InvokeAsync<object>(Namespace + ".pause"); }
 
         /// <summary>
         /// Puts the SpeechSynthesis object into a non-paused state if it was already paused.
         /// </summary>
-        public void Resume() { if (Available) JSRuntime.Current.InvokeAsync<object>(Namespace + ".resume"); }
+        public void Resume() { if (Available) JSRuntime.InvokeAsync<object>(Namespace + ".resume"); }
     }
 }

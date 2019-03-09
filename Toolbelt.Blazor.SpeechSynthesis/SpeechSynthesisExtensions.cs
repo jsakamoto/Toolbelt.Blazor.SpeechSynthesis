@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.JSInterop;
 
 namespace Toolbelt.Blazor.Extensions.DependencyInjection
 {
@@ -13,7 +14,7 @@ namespace Toolbelt.Blazor.Extensions.DependencyInjection
         /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add the service to.</param>
         public static IServiceCollection AddSpeechSynthesis(this IServiceCollection services)
         {
-            services.AddScoped(_ => new global::Toolbelt.Blazor.SpeechSynthesis.SpeechSynthesis().Refresh());
+            services.AddScoped(serviceProvider => new global::Toolbelt.Blazor.SpeechSynthesis.SpeechSynthesis(serviceProvider.GetService<IJSRuntime>()).Refresh());
             return services;
         }
     }

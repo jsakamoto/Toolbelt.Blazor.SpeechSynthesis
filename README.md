@@ -29,12 +29,12 @@ public class Startup
     ...
 ```
 
-### 2. Usage in your Blazor component (.cshtml)
+### 2. Usage in your Blazor component (.razor)
 
 **Step.2-1**  Open the `Toolbelt.Blazor.SpeechSynthesis` namespace, and inject the `SpeechSynthesis` service into the component.
 
 ```csharp
-@{/* This is your component .cshtml*/}
+@{/* This is your component .razor */}
 @using Toolbelt.Blazor.SpeechSynthesis @{/* Add these two lines. */}
 @inject SpeechSynthesis SpeechSynthesis
 ...
@@ -96,6 +96,7 @@ If you want to chose type of voices, you can do it with `GetVoicesAsync()` metho
 
 ## Release Note
 
+- **v.4.0.0** - BREAKING CHANGE: Support Blazor v.3.0.0 Preview 4 (not compatible with v.0.9.0 or before.)
 - **v.3.0.0** - BREAKING CHANGE: Support Blazor v.0.9.0 (not compatible with v.0.8.0 or before.)
 - **v.2.0.0** - BREAKING CHANGE: Support Blazor v.0.8.0 (not compatible with v.0.7.0 or before.)
 - **v.1.0.0** - 1st release.

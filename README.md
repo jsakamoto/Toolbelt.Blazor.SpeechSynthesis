@@ -46,9 +46,9 @@ public class Startup
 @using Toolbelt.Blazor.SpeechSynthesis
 @inject SpeechSynthesis SpeechSynthesis
 
-<div> <textarea @bind="@Text"></textarea> </div>
+<div> <textarea @bind="Text"></textarea> </div>
 
-<div> <button @onclick="@onClickSpeak">Speak</button> </div>
+<div> <button @onclick="onClickSpeak">Speak</button> </div>
 
 @code {
 
@@ -80,7 +80,7 @@ If you want to chose type of voices, you can do it with `GetVoicesAsync()` metho
 ```csharp
   IEnumerable<SpeechSynthesisVoice> Voices;
 
-  protected async override Task OnInitAsync()
+  protected async override Task OnInitializedAsync()
   {
     this.Voices = await this.SpeechSynthesis.GetVoicesAsync();
   }
@@ -96,6 +96,7 @@ If you want to chose type of voices, you can do it with `GetVoicesAsync()` metho
 
 ## Release Note
 
+- **v.6.0.0** - BREAKING CHANGE: Support Blazor v.3.0.0 Preview 8 (not compatible with v.3.0.0 Preview 7 or before.)
 - **v.5.0.0** - BREAKING CHANGE: Support Blazor v.3.0.0 Preview 6 (not compatible with v.3.0.0 Preview 5 or before.)
 - **v.4.0.0** - BREAKING CHANGE: Support Blazor v.3.0.0 Preview 4 (not compatible with v.0.9.0 or before.)
 - **v.3.0.0** - BREAKING CHANGE: Support Blazor v.0.9.0 (not compatible with v.0.8.0 or before.)

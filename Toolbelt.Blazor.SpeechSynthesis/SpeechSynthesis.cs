@@ -17,7 +17,7 @@ namespace Toolbelt.Blazor.SpeechSynthesis
 
         private Task LastRefreshTask = null;
 
-        private DotNetObjectRef<SpeechSynthesis> _ObjectRefOfThis;
+        private DotNetObjectReference<SpeechSynthesis> _ObjectRefOfThis;
 
         private bool _Available;
 
@@ -54,9 +54,9 @@ namespace Toolbelt.Blazor.SpeechSynthesis
             this.JSRuntime = jSRuntime;
         }
 
-        private DotNetObjectRef<SpeechSynthesis> GetObjectRef()
+        private DotNetObjectReference<SpeechSynthesis> GetObjectRef()
         {
-            if (_ObjectRefOfThis == null) _ObjectRefOfThis = DotNetObjectRef.Create(this);
+            if (_ObjectRefOfThis == null) _ObjectRefOfThis = DotNetObjectReference.Create(this);
             return _ObjectRefOfThis;
         }
 
@@ -65,7 +65,7 @@ namespace Toolbelt.Blazor.SpeechSynthesis
             if ((LastRefreshTask?.IsCompleted ?? true) == true)
             {
                 LastRefreshTask?.Dispose();
-                LastRefreshTask = JSRuntime.InvokeAsync<object>(Namespace + ".refresh", this.GetObjectRef());
+                LastRefreshTask = JSRuntime.InvokeAsync<object>(Namespace + ".refresh", this.GetObjectRef()).AsTask();
             }
             return this;
         }

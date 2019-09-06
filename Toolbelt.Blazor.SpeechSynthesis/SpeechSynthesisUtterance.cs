@@ -81,14 +81,14 @@ namespace Toolbelt.Blazor.SpeechSynthesis
         /// </summary>
         public event EventHandler Error;
 
-        private DotNetObjectRef<SpeechSynthesisUtterance> _ObjectRef;
+        private DotNetObjectReference<SpeechSynthesisUtterance> _ObjectRef;
 
         private int _ObjectRefCounter = 0;
 
-        internal DotNetObjectRef<SpeechSynthesisUtterance> GetObjectRef()
+        internal DotNetObjectReference<SpeechSynthesisUtterance> GetObjectRef()
         {
             _ObjectRefCounter++;
-            if (_ObjectRefCounter == 1) _ObjectRef = DotNetObjectRef.Create(this);
+            if (_ObjectRefCounter == 1) _ObjectRef = DotNetObjectReference.Create(this);
             return _ObjectRef;
         }
 

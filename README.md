@@ -2,7 +2,7 @@
 
 ## Summary
 
-This is a class library for Blazor app to provide Speech Synthesis API access.
+This is a class library for Blazor app (both "WebAssembly App" client-side model and "Server App" server-side model) to provide Speech Synthesis API access.
 
 ## How to install and use?
 

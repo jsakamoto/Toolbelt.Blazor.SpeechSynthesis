@@ -1,3 +1,4 @@
+"use strict";
 var Toolbelt;
 (function (Toolbelt) {
     var Blazor;
@@ -66,4 +67,3 @@ var Toolbelt;
         })(SpeechSynthesis = Blazor.SpeechSynthesis || (Blazor.SpeechSynthesis = {}));
     })(Blazor = Toolbelt.Blazor || (Toolbelt.Blazor = {}));
 })(Toolbelt || (Toolbelt = {}));
-//# sourceMappingURL=script.js.map

@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
+using Toolbelt.Blazor.SpeechSynthesis;
 
 namespace Toolbelt.Blazor.Extensions.DependencyInjection
 {
@@ -12,10 +14,16 @@ namespace Toolbelt.Blazor.Extensions.DependencyInjection
         ///  Adds a SpeechSynthesis service to the specified Microsoft.Extensions.DependencyInjection.IServiceCollection.
         /// </summary>
         /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add the service to.</param>
-        public static IServiceCollection AddSpeechSynthesis(this IServiceCollection services)
+        /// <param name="configure">An System.Action`1 to configure the options for SpeechSynthesis service.</param>
+        public static IServiceCollection AddSpeechSynthesis(this IServiceCollection services, Action<SpeechSynthesisOptions> configure = null)
         {
-            services.AddScoped(serviceProvider => new global::Toolbelt.Blazor.SpeechSynthesis.SpeechSynthesis(serviceProvider.GetService<IJSRuntime>()).Refresh());
-            return services;
+            return services.AddScoped(serviceProvider =>
+            {
+                var options = new SpeechSynthesisOptions();
+                configure?.Invoke(options);
+                var jsRuntime = serviceProvider.GetService<IJSRuntime>();
+                return new SpeechSynthesis.SpeechSynthesis(jsRuntime, options).Refresh();
+            });
         }
     }
 }

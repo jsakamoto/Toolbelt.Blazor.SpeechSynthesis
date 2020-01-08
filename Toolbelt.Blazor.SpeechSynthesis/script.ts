@@ -38,7 +38,7 @@
     export function speak(sRef: DotNetObjectRef, arg: SpeechSynthesisUtterance, uRef: DotNetObjectRef): void {
         if (!available) return;
         const u = new SpeechSynthesisUtterance();
-        if (arg.voice !== null) arg.voice = s.getVoices().find(v => v.voiceURI === arg.voice.voiceURI);
+        if (arg.voice !== null) arg.voice = s.getVoices().find(v => v.voiceURI === arg.voice.voiceURI)!;
         Object.assign(u, arg);
 
         const types = ["boundary", "end", "error", "mark", "pause", "resume", "start"];

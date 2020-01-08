@@ -1,5 +1,4 @@
-﻿@{/* Your component .razor */}
-@using Toolbelt.Blazor.SpeechSynthesis; @{/* Add these tow lines. */}
+﻿@using Toolbelt.Blazor.SpeechSynthesis
 @inject SpeechSynthesis SpeechSynthesis
 
 <p>
@@ -76,10 +75,14 @@
         set { this.CurrentVoice = this.Voices.FirstOrDefault(v => v.VoiceURI == value); }
     }
 
-    protected async override Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        HandleEvents(this.CachedUtterancet);
-        this.Voices = await this.SpeechSynthesis.GetVoicesAsync();
+        if (firstRender)
+        {
+            HandleEvents(this.CachedUtterancet);
+            this.Voices = await this.SpeechSynthesis.GetVoicesAsync();
+            this.StateHasChanged();
+        }
     }
 
     void onClickSpeakButton()

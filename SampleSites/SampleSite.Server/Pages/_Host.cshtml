@@ -1,0 +1,37 @@
+﻿@page "/"
+@namespace SampleSite.Components
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blazor SpeechSynthesis Sample Site - Server App</title>
+    <base href="~/" />
+    <!-- style for blazor-error-ui -->
+    <link rel="stylesheet" href="data:text/css,%23blazor-error-ui%7Bbackground%3A%23ffffe0%3Bbottom%3A0%3Bbox-shadow%3A0%20-1px%202px%20rgba(0%2C0%2C0%2C.2)%3Bdisplay%3Anone%3Bleft%3A0%3Bpadding%3A.6rem%201.25rem%20.7rem%201.25rem%3Bposition%3Afixed%3Bwidth%3A100%25%3Bz-index%3A1000%7D%23blazor-error-ui%20.dismiss%7Bcursor%3Apointer%3Bposition%3Aabsolute%3Bright%3A.75rem%3Btop%3A.5rem%7D" />
+</head>
+<body>
+    <app>
+        <component type="typeof(App)" render-mode="ServerPrerendered" />
+    </app>
+
+    <div id="blazor-error-ui">
+        <environment include="Staging,Production">
+            An error has occurred. This application may no longer respond until reloaded.
+        </environment>
+        <environment include="Development">
+            An unhandled exception has occurred. See browser dev tools for details.
+        </environment>
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+
+    @*<script src="_content/Toolbelt.Blazor.SpeechSynthesis/script.min.js"></script>*@
+    <script src="_framework/blazor.server.js"></script>
+</body>
+</html>

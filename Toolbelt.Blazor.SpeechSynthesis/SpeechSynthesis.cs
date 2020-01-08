@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.JSInterop;
 
@@ -11,9 +12,15 @@ namespace Toolbelt.Blazor.SpeechSynthesis
     /// </summary>
     public class SpeechSynthesis
     {
-        private static readonly string Namespace = "Toolbelt.Blazor.SpeechSynthesis";
+        private static readonly string Prefix = "Toolbelt.Blazor.SpeechSynthesis.";
+
+        private SpeechSynthesisOptions Options;
 
         private readonly IJSRuntime JSRuntime;
+
+        private readonly SemaphoreSlim Syncer = new SemaphoreSlim(1, 1);
+
+        private bool _JSLoaded;
 
         private Task LastRefreshTask = null;
 
@@ -49,9 +56,10 @@ namespace Toolbelt.Blazor.SpeechSynthesis
         /// </summary>
         public bool Speaking => this.Refresh()._Speaking;
 
-        internal SpeechSynthesis(IJSRuntime jSRuntime)
+        internal SpeechSynthesis(IJSRuntime jSRuntime, SpeechSynthesisOptions options)
         {
             this.JSRuntime = jSRuntime;
+            this.Options = options;
         }
 
         private DotNetObjectReference<SpeechSynthesis> GetObjectRef()
@@ -65,7 +73,7 @@ namespace Toolbelt.Blazor.SpeechSynthesis
             if ((LastRefreshTask?.IsCompleted ?? true) == true)
             {
                 LastRefreshTask?.Dispose();
-                LastRefreshTask = JSRuntime.InvokeAsync<object>(Namespace + ".refresh", this.GetObjectRef()).AsTask();
+                LastRefreshTask = InvokeJavaScriptAsync<object>("refresh", this.GetObjectRef()).AsTask();
             }
             return this;
         }
@@ -86,7 +94,7 @@ namespace Toolbelt.Blazor.SpeechSynthesis
         {
             if (_Voices == null) _Voices = new List<SpeechSynthesisVoice>();
 
-            var latestVoices = await JSRuntime.InvokeAsync<SpeechSynthesisVoiceInternal[]>(Namespace + ".getVoices");
+            var latestVoices = await InvokeJavaScriptAsync<SpeechSynthesisVoiceInternal[]>("getVoices");
             var toAddVoices = latestVoices.Where(p1 => !_Voices.Any(p2 => p1.VoiceURI == p2.VoiceURI)).ToArray();
             var toRemoveVoices = _Voices.Where(p1 => !latestVoices.Any(p2 => p1.VoiceURI == p2.VoiceURI)).ToArray();
 
@@ -102,28 +110,50 @@ namespace Toolbelt.Blazor.SpeechSynthesis
         /// </summary>
         public void Speak(string text) => this.Speak(new SpeechSynthesisUtterance { Text = text });
 
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+
         /// <summary>
         /// Adds an utterance to the utterance queue.
         /// <para>it will be spoken when any other utterances queued before it have been spoken.</para>
         /// </summary>
         public void Speak(SpeechSynthesisUtterance utterance)
         {
-            if (Available) JSRuntime.InvokeAsync<object>(Namespace + ".speak", this.GetObjectRef(), utterance, utterance.GetObjectRef());
+            if (Available) InvokeJavaScriptAsync<object>("speak", this.GetObjectRef(), utterance, utterance.GetObjectRef());
         }
 
         /// <summary>
         /// Removes all utterances from the utterance queue.
         /// </summary>
-        public void Cancel() { if (Available) JSRuntime.InvokeAsync<object>(Namespace + ".cancel"); }
+        public void Cancel() { if (Available) InvokeJavaScriptAsync<object>("cancel"); }
 
         /// <summary>
         /// Puts the SpeechSynthesis object into a paused state.
         /// </summary>
-        public void Pause() { if (Available) JSRuntime.InvokeAsync<object>(Namespace + ".pause"); }
+        public void Pause() { if (Available) InvokeJavaScriptAsync<object>("pause"); }
 
         /// <summary>
         /// Puts the SpeechSynthesis object into a non-paused state if it was already paused.
         /// </summary>
-        public void Resume() { if (Available) JSRuntime.InvokeAsync<object>(Namespace + ".resume"); }
+        public void Resume() { if (Available) InvokeJavaScriptAsync<object>("resume"); }
+
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+
+        private async ValueTask<T> InvokeJavaScriptAsync<T>(string identifier, params object[] args)
+        {
+            if (!_JSLoaded && !this.Options.DisableClientScriptAutoInjection)
+            {
+                await Syncer.WaitAsync();
+                try
+                {
+                    if (!_JSLoaded)
+                    {
+                        await JSRuntime.InvokeAsync<object>("eval", "new Promise(r=>((d,t,s)=>(h=>h.querySelector(t+`[src=\"${s}\"]`)?r():(e=>(e.src=s,e.onload=r,h.appendChild(e)))(d.createElement(t)))(d.head))(document,'script','_content/Toolbelt.Blazor.SpeechSynthesis/script.min.js'))");
+                        _JSLoaded = true;
+                    }
+                }
+                finally { Syncer.Release(); }
+            }
+            return await this.JSRuntime.InvokeAsync<T>(Prefix + identifier, args);
+        }
     }
 }

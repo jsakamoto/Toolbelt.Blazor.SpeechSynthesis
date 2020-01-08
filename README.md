@@ -80,9 +80,13 @@ If you want to chose type of voices, you can do it with `GetVoicesAsync()` metho
 ```csharp
   IEnumerable<SpeechSynthesisVoice> Voices;
 
-  protected async override Task OnInitializedAsync()
+  protected async override Task OnAfterRenderAsync(bool firstRender)
   {
-    this.Voices = await this.SpeechSynthesis.GetVoicesAsync();
+    if (firstRender)
+    {
+      this.Voices = await this.SpeechSynthesis.GetVoicesAsync();
+      this.StateHasChanged();
+    }
   }
 
   void onClickSpeak() {
@@ -96,6 +100,9 @@ If you want to chose type of voices, you can do it with `GetVoicesAsync()` metho
 
 ## Release Note
 
+- **v.8.0.0**
+    - BREAKING CHANGE: Support Blazor v.3.1.0 Preview 4 (not compatible with v.3.0.0 Preview 9 or before.)
+    - Add support for Blazor Server App. (a.k.a Server-side Blazor)
 - **v.7.0.0** - BREAKING CHANGE: Support Blazor v.3.0.0 Preview 9 (not compatible with v.3.0.0 Preview 8 or before.)
 - **v.6.0.0** - BREAKING CHANGE: Support Blazor v.3.0.0 Preview 8 (not compatible with v.3.0.0 Preview 7 or before.)
 - **v.5.0.0** - BREAKING CHANGE: Support Blazor v.3.0.0 Preview 6 (not compatible with v.3.0.0 Preview 5 or before.)

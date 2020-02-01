@@ -14,7 +14,9 @@ This is a class library for Blazor app (both "WebAssembly App" client-side model
 > dotnet add package Toolbelt.Blazor.SpeechSynthesis
 ```
 
-**Step.1-2** Register "SpeechSynthesis" service into the DI container, at `ConfigureService` method in the `Startup` class of your Blazor application.
+**Step.1-2** Register "SpeechSynthesis" service into the DI container.
+
+If the project is a Blazor Server App or a Blazor WebAssembly App ver.3.1 Preview 4 or earlyer, add the code into the `ConfigureService` method in the `Startup` class of your Blazor application.
 
 ```csharp
 // Startup.cs
@@ -26,6 +28,23 @@ public class Startup
   public void ConfigureServices(IServiceCollection services)
   {
     services.AddSpeechSynthesis(); // <- Add this line.
+    ...
+```
+
+If the project is a Blazor WebAssembly App ver.3.2 Preview 1 or later, add the code into the `Main` method in the `Program` class of your Blazor application.
+
+```csharp
+// Program.cs
+
+using Toolbelt.Blazor.Extensions.DependencyInjection; // <- Add this, and...
+...
+public class Program
+{
+  public static async Task Main(string[] args)
+  {
+    var builder = WebAssemblyHostBuilder.CreateDefault(args);
+    ...
+    builder.Services.AddSpeechSynthesis(); // <- Add this line.
     ...
 ```
 

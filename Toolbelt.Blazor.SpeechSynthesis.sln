@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "README", "README", "{F8CAC85F-E2A4-4237-9EDA-582595BEB7A0}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
+		RELEASE-NOTES.txt = RELEASE-NOTES.txt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SampleSites", "SampleSites", "{D5BC12D8-F4C7-4AAA-AEDD-F4F9A024C53A}"

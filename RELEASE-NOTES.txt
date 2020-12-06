@@ -1,3 +1,6 @@
+v.8.1.0
+- Improve: SpeechSynthesis service now exposes events of utterance.
+
 v.8.0.0
 - BREAKING CHANGE: Support Blazor ver.3.1.0 Preview 4 (not compatible with ver.3.0.0 Preview 9 or before.)
 - Add support for Blazor Server App. (a.k.a Server-side Blazor)

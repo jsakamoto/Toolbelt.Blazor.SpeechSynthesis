@@ -79,16 +79,22 @@
     {
         if (firstRender)
         {
-            HandleEvents(this.CachedUtterancet);
             this.Voices = await this.SpeechSynthesis.GetVoicesAsync();
             this.StateHasChanged();
+
+            SpeechSynthesis.UtteranceStarted += OnStart;
+            SpeechSynthesis.UtteranceReachedBoundary += OnBoundary;
+            SpeechSynthesis.UtteranceReachedMark += OnMark;
+            SpeechSynthesis.UtterancePaused += OnPause;
+            SpeechSynthesis.UtteranceResumed += OnResume;
+            SpeechSynthesis.UtteranceEnded += OnEnd;
+            SpeechSynthesis.UtteranceError += OnError;
         }
     }
 
     void onClickSpeakButton()
     {
         var utterancet = new SpeechSynthesisUtterance();
-        HandleEvents(utterancet);
         SetupUtterancet(utterancet);
         this.SpeechSynthesis.Speak(utterancet);
     }
@@ -107,17 +113,6 @@
         utterancet.Rate = this.Rate;
         utterancet.Volume = this.Volume;
         utterancet.Voice = this.CurrentVoice;
-    }
-
-    void HandleEvents(SpeechSynthesisUtterance utterancet)
-    {
-        utterancet.Start += OnStart;
-        utterancet.Boundary += OnBoundary;
-        utterancet.Mark += OnMark;
-        utterancet.Pause += OnPause;
-        utterancet.Resume += OnResume;
-        utterancet.End += OnEnd;
-        utterancet.Error += OnError;
     }
 
     void onClickPauseButton()

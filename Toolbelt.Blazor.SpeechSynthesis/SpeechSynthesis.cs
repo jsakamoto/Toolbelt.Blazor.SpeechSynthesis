@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading;
@@ -36,6 +37,10 @@ namespace Toolbelt.Blazor.SpeechSynthesis
 
         private List<SpeechSynthesisVoice> _Voices;
 
+        private readonly object _EventHandledUtterancesLock = new object();
+
+        private WeakReference<SpeechSynthesisUtterance>[] _EventHandledUtterances = new WeakReference<SpeechSynthesisUtterance>[0];
+
         /// <summary>
         /// Gets a value that indicates whether the Web Speech API is available or not.
         /// </summary>
@@ -55,6 +60,41 @@ namespace Toolbelt.Blazor.SpeechSynthesis
         /// Gets a value that indicates whether an utterance is currently in the process of being spoken (includes SpeechSynthesis is in a paused state) or not.
         /// </summary>
         public bool Speaking => this.Refresh()._Speaking;
+
+        /// <summary>
+        /// Occurs when the utterance has begun to be spoken.
+        /// </summary>
+        public event EventHandler UtteranceStarted;
+
+        /// <summary>
+        /// Occurs when the spoken utterance reaches a word or sentence boundary.
+        /// </summary>
+        public event EventHandler UtteranceReachedBoundary;
+
+        /// <summary>
+        /// Occurs when the spoken utterance reaches a named SSML "mark" tag.
+        /// </summary>
+        public event EventHandler UtteranceReachedMark;
+
+        /// <summary>
+        /// Occurs when the utterance is paused part way through.
+        /// </summary>
+        public event EventHandler UtterancePaused;
+
+        /// <summary>
+        /// Occurs when a paused utterance is resumed.
+        /// </summary>
+        public event EventHandler UtteranceResumed;
+
+        /// <summary>
+        /// Occurs when the utterance has finished being spoken.
+        /// </summary>
+        public event EventHandler UtteranceEnded;
+
+        /// <summary>
+        /// Occurs when an error occurs that prevents the utterance from being succesfully spoken.
+        /// </summary>
+        public event EventHandler UtteranceError;
 
         internal SpeechSynthesis(IJSRuntime jSRuntime, SpeechSynthesisOptions options)
         {
@@ -118,7 +158,31 @@ namespace Toolbelt.Blazor.SpeechSynthesis
         /// </summary>
         public void Speak(SpeechSynthesisUtterance utterance)
         {
-            if (Available) InvokeJavaScriptAsync<object>("speak", this.GetObjectRef(), utterance, utterance.GetObjectRef());
+            if (Available)
+            {
+                lock (_EventHandledUtterancesLock)
+                {
+                    var eventHandledUtterances = _EventHandledUtterances
+                        .Select(wref => (WeakRef: wref, Utterance: wref.TryGetTarget(out var u) ? u : null))
+                        .Where(item => item.Utterance != null)
+                        .ToArray();
+                    var eventHandled = eventHandledUtterances.Any(item => Object.ReferenceEquals(item.Utterance, utterance));
+
+                    if (!eventHandled)
+                    {
+                        eventHandledUtterances = eventHandledUtterances
+                            .ToArray();
+                        _EventHandledUtterances = eventHandledUtterances.Select(item => item.WeakRef)
+                            .Concat(new[] { new WeakReference<SpeechSynthesisUtterance>(utterance) })
+                            .ToArray();
+                        HandleEvents(utterance);
+                    }
+                    else
+                        _EventHandledUtterances = eventHandledUtterances.Select(item => item.WeakRef).ToArray();
+                }
+
+                InvokeJavaScriptAsync<object>("speak", this.GetObjectRef(), utterance, utterance.GetObjectRef());
+            }
         }
 
         /// <summary>
@@ -137,6 +201,26 @@ namespace Toolbelt.Blazor.SpeechSynthesis
         public void Resume() { if (Available) InvokeJavaScriptAsync<object>("resume"); }
 
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+
+        private void HandleEvents(SpeechSynthesisUtterance utterancet)
+        {
+            utterancet.Start += OnStart;
+            utterancet.Boundary += OnBoundary;
+            utterancet.Mark += OnMark;
+            utterancet.Pause += OnPause;
+            utterancet.Resume += OnResume;
+            utterancet.End += OnEnd;
+            utterancet.Error += OnError;
+        }
+
+        private void OnStart(object sender, EventArgs args) { UtteranceStarted?.Invoke(sender, args); }
+        private void OnBoundary(object sender, EventArgs args) { UtteranceReachedBoundary?.Invoke(sender, args); }
+        private void OnMark(object sender, EventArgs args) { UtteranceReachedMark?.Invoke(sender, args); }
+        private void OnPause(object sender, EventArgs args) { UtterancePaused?.Invoke(sender, args); }
+        private void OnResume(object sender, EventArgs args) { UtteranceResumed?.Invoke(sender, args); }
+        private void OnEnd(object sender, EventArgs args) { UtteranceEnded?.Invoke(sender, args); }
+        private void OnError(object sender, EventArgs args) { UtteranceError?.Invoke(sender, args); }
+
 
         private async ValueTask<T> InvokeJavaScriptAsync<T>(string identifier, params object[] args)
         {

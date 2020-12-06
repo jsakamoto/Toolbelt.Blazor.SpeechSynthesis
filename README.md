@@ -4,6 +4,8 @@
 
 This is a class library for Blazor app (both "WebAssembly App" client-side model and "Server App" server-side model) to provide Speech Synthesis API access.
 
+- [Live Demo Site](https://jsakamoto.github.io/Toolbelt.Blazor.SpeechSynthesis//)
+
 ## How to install and use?
 
 ### 1. Installation and Registration

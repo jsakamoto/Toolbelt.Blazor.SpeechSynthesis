@@ -20,12 +20,17 @@
     <PackageTags>blazor,speech,speechsynthesis</PackageTags>
     <PackageReleaseNotes>(Please write the package release notes in "../RELEASE-NOTES.txt")</PackageReleaseNotes>
     <PackageOutputPath>..\_dist\</PackageOutputPath>
+    <PackageIcon>nupkg-icon.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <Content Update="**/*.json">
       <Pack>false</Pack>
     </Content>
+    <None Include="..\.assets\nupkg-icon.png" Visible="false">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

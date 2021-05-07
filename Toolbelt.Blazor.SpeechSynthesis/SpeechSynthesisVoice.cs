@@ -34,7 +34,7 @@ namespace Toolbelt.Blazor.SpeechSynthesis
         internal SpeechSynthesisVoice(SpeechSynthesisVoiceInternal voice)
         {
             this.Default = voice.Default;
-            this.Lang = voice.Lang;
+            this.Lang = voice.Lang.Replace('_', '-');
             this.LocalService = voice.LocalService;
             this.Name = voice.Name;
             this.VoiceURI = voice.VoiceURI;

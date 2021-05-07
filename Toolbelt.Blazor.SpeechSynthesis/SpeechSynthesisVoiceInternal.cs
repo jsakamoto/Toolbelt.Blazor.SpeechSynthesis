@@ -3,6 +3,8 @@ namespace Toolbelt.Blazor.SpeechSynthesis
 {
     internal class SpeechSynthesisVoiceInternal
     {
+        public string VoiceIdentity => this.VoiceURI + "|" + this.Lang;
+
         public bool Default { get; set; }
 
         public string Lang { get; set; }

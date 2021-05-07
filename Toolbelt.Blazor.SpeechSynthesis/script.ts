@@ -8,9 +8,9 @@
         type: string;
     }
 
-    const s = window.speechSynthesis || ({ paused: false, pending: false, speaking: false } as SpeechSynthesis);
-    const available = typeof s.getVoices !== 'undefined';
-    const onVoicesChanged = (available && s.getVoices().length === 0) ? new Promise<void>(resolve => s.addEventListener('voiceschanged', () => resolve())) : Promise.resolve();
+    const speechSynthesis = window.speechSynthesis || ({ paused: false, pending: false, speaking: false } as SpeechSynthesis);
+    const available = typeof speechSynthesis.getVoices !== 'undefined';
+    const onVoicesChanged = (available && speechSynthesis.getVoices().length === 0) ? new Promise<void>(resolve => speechSynthesis.addEventListener('voiceschanged', () => resolve())) : Promise.resolve();
 
     interface UtteranceQueue {
         f: (ev: EventLikeObject) => void;
@@ -19,14 +19,14 @@
 
     let queue = [] as UtteranceQueue[];
 
-    export function refresh(objWrapper: DotNetObjectRef): void {
-        objWrapper.invokeMethodAsync('UpdateStatus', available, s.paused, s.pending, s.speaking);
+    export function refresh(dotnetSpeechSynthesis: DotNetObjectRef): void {
+        dotnetSpeechSynthesis.invokeMethodAsync('UpdateStatus', available, speechSynthesis.paused, speechSynthesis.pending, speechSynthesis.speaking);
     }
 
     export function getVoices(): Promise<any[]> {
         if (!available) return Promise.resolve([] as any[]);
         return onVoicesChanged
-            .then(() => s.getVoices().map(v => ({
+            .then(() => speechSynthesis.getVoices().map(v => ({
                 default: v.default,
                 lang: v.lang,
                 localService: v.localService,
@@ -35,26 +35,35 @@
             })));
     }
 
-    export function speak(sRef: DotNetObjectRef, arg: SpeechSynthesisUtterance, uRef: DotNetObjectRef): void {
+    export function speak(
+        dotnetSpeechSynthesis: DotNetObjectRef,
+        utterance: SpeechSynthesisUtterance,
+        dotnetUtterance: DotNetObjectRef
+    ): void {
         if (!available) return;
-        const u = new SpeechSynthesisUtterance();
-        if (arg.voice !== null) arg.voice = s.getVoices().find(v => v.voiceURI === arg.voice.voiceURI)!;
-        Object.assign(u, arg);
+        if (utterance.voice !== null) {
+            const voiceURI = utterance.voice.voiceURI;
+            const lang = utterance.voice.lang;
+            utterance.voice = speechSynthesis
+                .getVoices()
+                .find(v => v.voiceURI === voiceURI && v.lang.replace(/_/ig, '-') === lang)!;
+        }
+        utterance = Object.assign(new SpeechSynthesisUtterance(), utterance);
 
         const types = ["boundary", "end", "error", "mark", "pause", "resume", "start"];
         const f = function (ev: EventLikeObject): void {
-            refresh(sRef);
-            uRef.invokeMethodAsync('InvokeEvent', ev.type);
+            refresh(dotnetSpeechSynthesis);
+            dotnetUtterance.invokeMethodAsync('InvokeEvent', ev.type);
             if (ev.type === 'end' || ev.type === 'error' || ev.type === 'cancel') {
-                types.forEach(t => u.removeEventListener(t, f));
+                types.forEach(t => utterance.removeEventListener(t, f));
                 queue = queue.filter(q => q.f !== f);
             }
         }
-        types.forEach(t => u.addEventListener(t, f));
+        types.forEach(t => utterance.addEventListener(t, f));
 
         queue.push({ f });
 
-        s.speak(u);
+        speechSynthesis.speak(utterance);
 
         setTimeout(() => {
             const cancellers = queue.filter(q => q.cancel === true);
@@ -64,11 +73,11 @@
 
     export function cancel(): void {
         if (!available) return;
-        s.cancel();
+        speechSynthesis.cancel();
         queue.forEach(q => q.cancel = true);
     }
 
-    export function pause(): void { if (available) s.pause(); }
+    export function pause(): void { if (available) speechSynthesis.pause(); }
 
-    export function resume(): void { if (available) s.resume(); }
+    export function resume(): void { if (available) speechSynthesis.resume(); }
 }

@@ -135,8 +135,8 @@ namespace Toolbelt.Blazor.SpeechSynthesis
             if (_Voices == null) _Voices = new List<SpeechSynthesisVoice>();
 
             var latestVoices = await InvokeJavaScriptAsync<SpeechSynthesisVoiceInternal[]>("getVoices");
-            var toAddVoices = latestVoices.Where(p1 => !_Voices.Any(p2 => p1.VoiceURI == p2.VoiceURI)).ToArray();
-            var toRemoveVoices = _Voices.Where(p1 => !latestVoices.Any(p2 => p1.VoiceURI == p2.VoiceURI)).ToArray();
+            var toAddVoices = latestVoices.Where(p1 => !_Voices.Any(p2 => p1.VoiceIdentity == p2.VoiceIdentity)).ToArray();
+            var toRemoveVoices = _Voices.Where(p1 => !latestVoices.Any(p2 => p1.VoiceIdentity == p2.VoiceIdentity)).ToArray();
 
             _Voices.AddRange(toAddVoices.Select(v => new SpeechSynthesisVoice(v)));
             foreach (var voice in toRemoveVoices) _Voices.Remove(voice);

@@ -7,6 +7,11 @@ namespace Toolbelt.Blazor.SpeechSynthesis
     public class SpeechSynthesisVoice
     {
         /// <summary>
+        /// Gets a combined value of VoiceURI and Lang to identify a particular voice instance.
+        /// </summary>
+        public string VoiceIdentity { get; }
+
+        /// <summary>
         /// Gets a value that indicates whether the voice is the default voice for the current app language or not.
         /// </summary>
         public bool Default { get; }
@@ -38,6 +43,7 @@ namespace Toolbelt.Blazor.SpeechSynthesis
             this.LocalService = voice.LocalService;
             this.Name = voice.Name;
             this.VoiceURI = voice.VoiceURI;
+            this.VoiceIdentity = voice.VoiceIdentity;
         }
     }
 }

@@ -6,9 +6,9 @@
     Voice:
     <select @bind="CurrentVoiceURI">
         <option value="(unset)">(unset)</option>
-        @foreach (var voice in Voices)
+        @foreach (var voice in Voices.OrderBy(v => v.Lang).ThenBy(v => v.VoiceURI))
         {
-            <option @key="voice.VoiceURI" value="@voice.VoiceURI">@voice.Name</option>
+            <option @key="(voice.VoiceURI+voice.Lang)" value="@(voice.VoiceURI+"|"+voice.Lang)">@voice.Name (@voice.Lang)</option>
         }
     </select>
 </p>
@@ -71,8 +71,15 @@
 
     public string CurrentVoiceURI
     {
-        get { return this.CurrentVoice?.VoiceURI ?? "(unset)"; }
-        set { this.CurrentVoice = this.Voices.FirstOrDefault(v => v.VoiceURI == value); }
+        get { return this.CurrentVoice == null ? "(unset)" : this.CurrentVoice.VoiceURI + "|" + this.CurrentVoice.Lang; }
+        set
+        {
+            var parts = value.Split('|');
+            var voiceURI = parts.First();
+            var lang = parts.Skip(1).FirstOrDefault() ?? "";
+            this.CurrentVoice = this.Voices.FirstOrDefault(v => v.VoiceURI == voiceURI);
+            this.Lang = lang;
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

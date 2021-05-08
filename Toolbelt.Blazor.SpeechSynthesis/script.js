@@ -7,7 +7,14 @@ var Toolbelt;
         (function (SpeechSynthesis) {
             const speechSynthesis = window.speechSynthesis || { paused: false, pending: false, speaking: false };
             const available = typeof speechSynthesis.getVoices !== 'undefined';
-            const onVoicesChanged = (available && speechSynthesis.getVoices().length === 0) ? new Promise(resolve => speechSynthesis.addEventListener('voiceschanged', () => resolve())) : Promise.resolve();
+            const onVoicesChanged = (available && speechSynthesis.getVoices().length === 0) ?
+                new Promise(resolve => {
+                    speechSynthesis.addEventListener('voiceschanged', () => {
+                        if (speechSynthesis.getVoices().length > 0)
+                            resolve();
+                    });
+                }) :
+                Promise.resolve();
             let queue = [];
             function refresh(dotnetSpeechSynthesis) {
                 dotnetSpeechSynthesis.invokeMethodAsync('UpdateStatus', available, speechSynthesis.paused, speechSynthesis.pending, speechSynthesis.speaking);

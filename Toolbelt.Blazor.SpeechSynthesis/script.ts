@@ -10,7 +10,14 @@
 
     const speechSynthesis = window.speechSynthesis || ({ paused: false, pending: false, speaking: false } as SpeechSynthesis);
     const available = typeof speechSynthesis.getVoices !== 'undefined';
-    const onVoicesChanged = (available && speechSynthesis.getVoices().length === 0) ? new Promise<void>(resolve => speechSynthesis.addEventListener('voiceschanged', () => resolve())) : Promise.resolve();
+
+    const onVoicesChanged = (available && speechSynthesis.getVoices().length === 0) ?
+        new Promise<void>(resolve => {
+            speechSynthesis.addEventListener('voiceschanged', () => {
+                if (speechSynthesis.getVoices().length > 0) resolve();
+            })
+        }) :
+        Promise.resolve();
 
     interface UtteranceQueue {
         f: (ev: EventLikeObject) => void;

@@ -231,7 +231,11 @@ namespace Toolbelt.Blazor.SpeechSynthesis
                 {
                     if (!_JSLoaded)
                     {
-                        await JSRuntime.InvokeAsync<object>("eval", "new Promise(r=>((d,t,s)=>(h=>h.querySelector(t+`[src=\"${s}\"]`)?r():(e=>(e.src=s,e.onload=r,h.appendChild(e)))(d.createElement(t)))(d.head))(document,'script','_content/Toolbelt.Blazor.SpeechSynthesis/script.min.js'))");
+                        var version = this.GetType().Assembly.GetName().Version;
+                        var scriptPath = "_content/Toolbelt.Blazor.SpeechSynthesis/script.min.js?v=" + version;
+                        await JSRuntime.InvokeAsync<object>(
+                            "eval",
+                            "new Promise(r=>((d,t,s)=>(h=>h.querySelector(t+`[src=\"${s}\"]`)?r():(e=>(e.src=s,e.onload=r,h.appendChild(e)))(d.createElement(t)))(d.head))(document,'script','" + scriptPath + "'))");
                         _JSLoaded = true;
                     }
                 }

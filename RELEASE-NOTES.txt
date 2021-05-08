@@ -1,3 +1,12 @@
+v.8.1.1
+- Fix: Some troubles on Android devices.
+  - Implemented the workaround for the problem that VoiceURI is not unique on Android devices.
+    (by using both VoiceURI and Lang to identify individual voices.)
+  - Implemented the workaround for the problem on Android devices that "Lang" is not valid BCP47 code.
+    (by converting "Lang" to a valid BCP47 code before using it.)
+- Fix: The list of voices is sometimes empty at the first-page loading.
+- Fix: The new version of helper JavaScript files is not loaded when the old one is in the browser's cache.
+
 v.8.1.0
 - Improve: SpeechSynthesis service now exposes events of utterance.
 

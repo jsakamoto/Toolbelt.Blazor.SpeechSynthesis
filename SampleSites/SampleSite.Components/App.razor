@@ -8,7 +8,7 @@
         <option value="(unset)">(unset)</option>
         @foreach (var voice in Voices.OrderBy(v => v.Lang).ThenBy(v => v.VoiceURI))
         {
-            <option @key="(voice.VoiceURI+voice.Lang)" value="@(voice.VoiceURI+"|"+voice.Lang)">@voice.Name (@voice.Lang)</option>
+            <option @key="voice.VoiceIdentity" value="@voice.VoiceIdentity">@voice.Name (@voice.Lang)</option>
         }
     </select>
 </p>
@@ -71,14 +71,11 @@
 
     public string CurrentVoiceURI
     {
-        get { return this.CurrentVoice == null ? "(unset)" : this.CurrentVoice.VoiceURI + "|" + this.CurrentVoice.Lang; }
+        get { return this.CurrentVoice == null ? "(unset)" : this.CurrentVoice.VoiceIdentity; }
         set
         {
-            var parts = value.Split('|');
-            var voiceURI = parts.First();
-            var lang = parts.Skip(1).FirstOrDefault() ?? "";
-            this.CurrentVoice = this.Voices.FirstOrDefault(v => v.VoiceURI == voiceURI);
-            this.Lang = lang;
+            this.CurrentVoice = this.Voices.FirstOrDefault(v => v.VoiceIdentity == value);
+            this.Lang = this.CurrentVoice?.Lang ?? "";
         }
     }
 

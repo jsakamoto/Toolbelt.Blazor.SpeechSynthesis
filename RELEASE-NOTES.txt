@@ -1,3 +1,6 @@
+v.9.0.0
+- Improve: load the helper JavaScript by Blazor JavaScript isolation feature (ES2015 module system) instead of using "eval".
+
 v.8.1.1
 - Fix: Some troubles on Android devices.
   - Implemented the workaround for the problem that VoiceURI is not unique on Android devices.

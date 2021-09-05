@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.5" />
-    <PackageReference Include="Toolbelt.Blazor.SpeechSynthesis" Version="8.1.1" />
+    <PackageReference Include="Toolbelt.Blazor.SpeechSynthesis" Version="9.0.0" />
     <!--<ProjectReference Include="..\..\Toolbelt.Blazor.SpeechSynthesis\Toolbelt.Blazor.SpeechSynthesis.csproj" />-->
   </ItemGroup>
 

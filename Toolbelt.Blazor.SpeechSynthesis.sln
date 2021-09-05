@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28531.58
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31612.314
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Toolbelt.Blazor.SpeechSynthesis", "Toolbelt.Blazor.SpeechSynthesis\Toolbelt.Blazor.SpeechSynthesis.csproj", "{A6C8F993-500E-47D6-8A67-A9D416D1085C}"
 EndProject
@@ -13,16 +13,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "README", "README", "{F8CAC8
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SampleSites", "SampleSites", "{D5BC12D8-F4C7-4AAA-AEDD-F4F9A024C53A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleSite.Components", "SampleSites\SampleSite.Components\SampleSite.Components.csproj", "{1A903089-F223-4967-A51F-C25B5514CEBD}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleSite.Client", "SampleSites\SampleSite.Client\SampleSite.Client.csproj", "{CAC2F580-3C3E-4107-B70D-AA5538C292DC}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleSite.Server", "SampleSites\SampleSite.Server\SampleSite.Server.csproj", "{3F492513-426A-4C92-98D1-D40E59306CAC}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Solution Items", "_Solution Items", "{1A59BBEE-07F7-42D3-B24B-76EEEF381691}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\gh-pages.yml = .github\workflows\gh-pages.yml
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "net5.0", "net5.0", "{BE2B5F54-E0D4-4FBD-948E-521A749AA640}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleSite.Components", "SampleSites\net5.0\SampleSite.Components\SampleSite.Components.csproj", "{FD1FA719-EC82-40DC-A781-8C15EBC9996D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleSite.Client", "SampleSites\net5.0\SampleSite.Client\SampleSite.Client.csproj", "{CEA40D2D-1E8D-4F36-B9FA-6AB4E930B954}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleSite.Server", "SampleSites\net5.0\SampleSite.Server\SampleSite.Server.csproj", "{4B9189CB-D2CC-4EB9-A2C2-3DA3FA1CE641}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,26 +36,27 @@ Global
 		{A6C8F993-500E-47D6-8A67-A9D416D1085C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6C8F993-500E-47D6-8A67-A9D416D1085C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6C8F993-500E-47D6-8A67-A9D416D1085C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1A903089-F223-4967-A51F-C25B5514CEBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1A903089-F223-4967-A51F-C25B5514CEBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1A903089-F223-4967-A51F-C25B5514CEBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1A903089-F223-4967-A51F-C25B5514CEBD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CAC2F580-3C3E-4107-B70D-AA5538C292DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CAC2F580-3C3E-4107-B70D-AA5538C292DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CAC2F580-3C3E-4107-B70D-AA5538C292DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CAC2F580-3C3E-4107-B70D-AA5538C292DC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3F492513-426A-4C92-98D1-D40E59306CAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3F492513-426A-4C92-98D1-D40E59306CAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3F492513-426A-4C92-98D1-D40E59306CAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3F492513-426A-4C92-98D1-D40E59306CAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD1FA719-EC82-40DC-A781-8C15EBC9996D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD1FA719-EC82-40DC-A781-8C15EBC9996D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD1FA719-EC82-40DC-A781-8C15EBC9996D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD1FA719-EC82-40DC-A781-8C15EBC9996D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CEA40D2D-1E8D-4F36-B9FA-6AB4E930B954}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CEA40D2D-1E8D-4F36-B9FA-6AB4E930B954}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CEA40D2D-1E8D-4F36-B9FA-6AB4E930B954}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CEA40D2D-1E8D-4F36-B9FA-6AB4E930B954}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B9189CB-D2CC-4EB9-A2C2-3DA3FA1CE641}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B9189CB-D2CC-4EB9-A2C2-3DA3FA1CE641}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B9189CB-D2CC-4EB9-A2C2-3DA3FA1CE641}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B9189CB-D2CC-4EB9-A2C2-3DA3FA1CE641}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{1A903089-F223-4967-A51F-C25B5514CEBD} = {D5BC12D8-F4C7-4AAA-AEDD-F4F9A024C53A}
-		{CAC2F580-3C3E-4107-B70D-AA5538C292DC} = {D5BC12D8-F4C7-4AAA-AEDD-F4F9A024C53A}
-		{3F492513-426A-4C92-98D1-D40E59306CAC} = {D5BC12D8-F4C7-4AAA-AEDD-F4F9A024C53A}
+		{BE2B5F54-E0D4-4FBD-948E-521A749AA640} = {D5BC12D8-F4C7-4AAA-AEDD-F4F9A024C53A}
+		{FD1FA719-EC82-40DC-A781-8C15EBC9996D} = {BE2B5F54-E0D4-4FBD-948E-521A749AA640}
+		{CEA40D2D-1E8D-4F36-B9FA-6AB4E930B954} = {BE2B5F54-E0D4-4FBD-948E-521A749AA640}
+		{4B9189CB-D2CC-4EB9-A2C2-3DA3FA1CE641} = {BE2B5F54-E0D4-4FBD-948E-521A749AA640}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {55EFE8E5-C3EB-4128-9592-F27026A30FC6}

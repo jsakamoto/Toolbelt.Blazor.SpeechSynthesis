@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.JSInterop;
@@ -12,6 +13,9 @@ namespace Toolbelt.Blazor.SpeechSynthesis
     /// The controller interface for the speech service of the Web Speech API.
     /// </summary>
     public class SpeechSynthesis
+#if ENABLE_JSMODULE
+        : IAsyncDisposable
+#endif
     {
         private static readonly string Prefix = "Toolbelt.Blazor.SpeechSynthesis.";
 
@@ -104,16 +108,16 @@ namespace Toolbelt.Blazor.SpeechSynthesis
 
         private DotNetObjectReference<SpeechSynthesis> GetObjectRef()
         {
-            if (_ObjectRefOfThis == null) _ObjectRefOfThis = DotNetObjectReference.Create(this);
-            return _ObjectRefOfThis;
+            if (this._ObjectRefOfThis == null) this._ObjectRefOfThis = DotNetObjectReference.Create(this);
+            return this._ObjectRefOfThis;
         }
 
         internal SpeechSynthesis Refresh()
         {
-            if ((LastRefreshTask?.IsCompleted ?? true) == true)
+            if ((this.LastRefreshTask?.IsCompleted ?? true) == true)
             {
-                LastRefreshTask?.Dispose();
-                LastRefreshTask = InvokeJavaScriptAsync<object>("refresh", this.GetObjectRef()).AsTask();
+                this.LastRefreshTask?.Dispose();
+                this.LastRefreshTask = this.InvokeJavaScriptAsync<object>("refresh", this.GetObjectRef()).AsTask();
             }
             return this;
         }
@@ -132,16 +136,16 @@ namespace Toolbelt.Blazor.SpeechSynthesis
         /// </summary>
         public async Task<IReadOnlyCollection<SpeechSynthesisVoice>> GetVoicesAsync()
         {
-            if (_Voices == null) _Voices = new List<SpeechSynthesisVoice>();
+            if (this._Voices == null) this._Voices = new List<SpeechSynthesisVoice>();
 
-            var latestVoices = await InvokeJavaScriptAsync<SpeechSynthesisVoiceInternal[]>("getVoices");
-            var toAddVoices = latestVoices.Where(p1 => !_Voices.Any(p2 => p1.VoiceIdentity == p2.VoiceIdentity)).ToArray();
-            var toRemoveVoices = _Voices.Where(p1 => !latestVoices.Any(p2 => p1.VoiceIdentity == p2.VoiceIdentity)).ToArray();
+            var latestVoices = await this.InvokeJavaScriptAsync<SpeechSynthesisVoiceInternal[]>("getVoices");
+            var toAddVoices = latestVoices.Where(p1 => !this._Voices.Any(p2 => p1.VoiceIdentity == p2.VoiceIdentity)).ToArray();
+            var toRemoveVoices = this._Voices.Where(p1 => !latestVoices.Any(p2 => p1.VoiceIdentity == p2.VoiceIdentity)).ToArray();
 
-            _Voices.AddRange(toAddVoices.Select(v => new SpeechSynthesisVoice(v)));
-            foreach (var voice in toRemoveVoices) _Voices.Remove(voice);
+            this._Voices.AddRange(toAddVoices.Select(v => new SpeechSynthesisVoice(v)));
+            foreach (var voice in toRemoveVoices) this._Voices.Remove(voice);
 
-            return _Voices;
+            return this._Voices;
         }
 
         /// <summary>
@@ -158,11 +162,11 @@ namespace Toolbelt.Blazor.SpeechSynthesis
         /// </summary>
         public void Speak(SpeechSynthesisUtterance utterance)
         {
-            if (Available)
+            if (this.Available)
             {
-                lock (_EventHandledUtterancesLock)
+                lock (this._EventHandledUtterancesLock)
                 {
-                    var eventHandledUtterances = _EventHandledUtterances
+                    var eventHandledUtterances = this._EventHandledUtterances
                         .Select(wref => (WeakRef: wref, Utterance: wref.TryGetTarget(out var u) ? u : null))
                         .Where(item => item.Utterance != null)
                         .ToArray();
@@ -172,45 +176,45 @@ namespace Toolbelt.Blazor.SpeechSynthesis
                     {
                         eventHandledUtterances = eventHandledUtterances
                             .ToArray();
-                        _EventHandledUtterances = eventHandledUtterances.Select(item => item.WeakRef)
+                        this._EventHandledUtterances = eventHandledUtterances.Select(item => item.WeakRef)
                             .Concat(new[] { new WeakReference<SpeechSynthesisUtterance>(utterance) })
                             .ToArray();
-                        HandleEvents(utterance);
+                        this.HandleEvents(utterance);
                     }
                     else
-                        _EventHandledUtterances = eventHandledUtterances.Select(item => item.WeakRef).ToArray();
+                        this._EventHandledUtterances = eventHandledUtterances.Select(item => item.WeakRef).ToArray();
                 }
 
-                InvokeJavaScriptAsync<object>("speak", this.GetObjectRef(), utterance, utterance.GetObjectRef());
+                this.InvokeJavaScriptAsync<object>("speak", this.GetObjectRef(), utterance, utterance.GetObjectRef());
             }
         }
 
         /// <summary>
         /// Removes all utterances from the utterance queue.
         /// </summary>
-        public void Cancel() { if (Available) InvokeJavaScriptAsync<object>("cancel"); }
+        public void Cancel() { if (this.Available) this.InvokeJavaScriptAsync<object>("cancel"); }
 
         /// <summary>
         /// Puts the SpeechSynthesis object into a paused state.
         /// </summary>
-        public void Pause() { if (Available) InvokeJavaScriptAsync<object>("pause"); }
+        public void Pause() { if (this.Available) this.InvokeJavaScriptAsync<object>("pause"); }
 
         /// <summary>
         /// Puts the SpeechSynthesis object into a non-paused state if it was already paused.
         /// </summary>
-        public void Resume() { if (Available) InvokeJavaScriptAsync<object>("resume"); }
+        public void Resume() { if (this.Available) this.InvokeJavaScriptAsync<object>("resume"); }
 
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
         private void HandleEvents(SpeechSynthesisUtterance utterancet)
         {
-            utterancet.Start += OnStart;
-            utterancet.Boundary += OnBoundary;
-            utterancet.Mark += OnMark;
-            utterancet.Pause += OnPause;
-            utterancet.Resume += OnResume;
-            utterancet.End += OnEnd;
-            utterancet.Error += OnError;
+            utterancet.Start += this.OnStart;
+            utterancet.Boundary += this.OnBoundary;
+            utterancet.Mark += this.OnMark;
+            utterancet.Pause += this.OnPause;
+            utterancet.Resume += this.OnResume;
+            utterancet.End += this.OnEnd;
+            utterancet.Error += this.OnError;
         }
 
         private void OnStart(object sender, EventArgs args) { UtteranceStarted?.Invoke(sender, args); }
@@ -221,27 +225,82 @@ namespace Toolbelt.Blazor.SpeechSynthesis
         private void OnEnd(object sender, EventArgs args) { UtteranceEnded?.Invoke(sender, args); }
         private void OnError(object sender, EventArgs args) { UtteranceError?.Invoke(sender, args); }
 
+        private string GetVersionText()
+        {
+            var assembly = this.GetType().Assembly;
+            var version = assembly
+                .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+                .InformationalVersion ?? assembly.GetName().Version.ToString();
+            return version;
+        }
+
+#if ENABLE_JSMODULE
+
+        private IJSObjectReference _JSModule = null;
 
         private async ValueTask<T> InvokeJavaScriptAsync<T>(string identifier, params object[] args)
         {
-            if (!_JSLoaded && !this.Options.DisableClientScriptAutoInjection)
+            if (!this._JSLoaded)
             {
-                await Syncer.WaitAsync();
+                await this.Syncer.WaitAsync();
                 try
                 {
-                    if (!_JSLoaded)
+                    if (!this._JSLoaded)
                     {
-                        var version = this.GetType().Assembly.GetName().Version;
-                        var scriptPath = "_content/Toolbelt.Blazor.SpeechSynthesis/script.min.js?v=" + version;
-                        await JSRuntime.InvokeAsync<object>(
-                            "eval",
-                            "new Promise(r=>((d,t,s)=>(h=>h.querySelector(t+`[src=\"${s}\"]`)?r():(e=>(e.src=s,e.onload=r,h.appendChild(e)))(d.createElement(t)))(d.head))(document,'script','" + scriptPath + "'))");
-                        _JSLoaded = true;
+                        if (!this.Options.DisableClientScriptAutoInjection)
+                        {
+                            var version = this.GetVersionText();
+                            var scriptPath = $"./_content/Toolbelt.Blazor.SpeechSynthesis/script.module.min.js?v={version}";
+                            this._JSModule = await this.JSRuntime.InvokeAsync<IJSObjectReference>("import", scriptPath);
+                        }
+                        else
+                        {
+                            try { await this.JSRuntime.InvokeVoidAsync("eval", "Toolbelt.Blazor.SpeechSynthesis.ready"); } catch { }
+                        }
+                        this._JSLoaded = true;
                     }
                 }
-                finally { Syncer.Release(); }
+                finally { this.Syncer.Release(); }
             }
+
+            if (this._JSModule != null)
+                return await this._JSModule.InvokeAsync<T>(Prefix + identifier, args);
+            else
+                return await this.JSRuntime.InvokeAsync<T>(Prefix + identifier, args);
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            if (_JSModule != null)
+            {
+                await _JSModule.DisposeAsync();
+            }
+        }
+#else
+        private async ValueTask<T> InvokeJavaScriptAsync<T>(string identifier, params object[] args)
+        {
+            if (!this._JSLoaded)
+            {
+                await this.Syncer.WaitAsync();
+                try
+                {
+                    if (!this._JSLoaded)
+                    {
+                        if (!this.Options.DisableClientScriptAutoInjection)
+                        {
+                            var version = this.GetVersionText();
+                            var scriptPath = "_content/Toolbelt.Blazor.SpeechSynthesis/script.min.js?v=" + version;
+                            await this.JSRuntime.InvokeVoidAsync("eval", "new Promise(r=>((d,t,s)=>(h=>h.querySelector(t+`[src^=\"${s}\"]`)?r():(e=>(e.src=s,e.onload=r,h.appendChild(e)))(d.createElement(t)))(d.head))(document,'script','" + scriptPath + "'))");
+                        }
+                        try { await this.JSRuntime.InvokeVoidAsync("eval", "Toolbelt.Blazor.SpeechSynthesis.ready"); } catch { }
+                        this._JSLoaded = true;
+                    }
+                }
+                finally { this.Syncer.Release(); }
+            }
+
             return await this.JSRuntime.InvokeAsync<T>(Prefix + identifier, args);
         }
+#endif
     }
 }

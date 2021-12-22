@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 var appBuilder = WebApplication.CreateBuilder(args);

@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Microsoft.JSInterop;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.JSInterop;
 
 namespace Toolbelt.Blazor.SpeechSynthesis
 {
@@ -249,8 +249,16 @@ namespace Toolbelt.Blazor.SpeechSynthesis
                     {
                         if (!this.Options.DisableClientScriptAutoInjection)
                         {
-                            var version = this.GetVersionText();
-                            var scriptPath = $"./_content/Toolbelt.Blazor.SpeechSynthesis/script.module.min.js?v={version}";
+                            var scriptPath = "./_content/Toolbelt.Blazor.SpeechSynthesis/script.module.min.js";
+
+                            // Add version string for refresh token only navigator is online.
+                            // (If the app runs on the offline mode, the module url with query parameters might cause the "resource not found" error.)
+                            const string moduleScript = "export function isOnLine(){ return navigator.onLine; }";
+                            await using var inlineJsModule = await this.JSRuntime.InvokeAsync<IJSObjectReference>("import", "data:text/javascript;charset=utf-8," + Uri.EscapeDataString(moduleScript));
+                            var isOnLine = await inlineJsModule.InvokeAsync<bool>("isOnLine");
+
+                            if (isOnLine) scriptPath += $"?v={this.GetVersionText()}";
+
                             this._JSModule = await this.JSRuntime.InvokeAsync<IJSObjectReference>("import", scriptPath);
                         }
                         else
@@ -273,7 +281,11 @@ namespace Toolbelt.Blazor.SpeechSynthesis
         {
             if (_JSModule != null)
             {
-                await _JSModule.DisposeAsync();
+                try { await _JSModule.DisposeAsync(); }
+#if NET6_0_OR_GREATER
+                catch (JSDisconnectedException) { }
+#endif
+                catch { throw; }
             }
         }
 #else
@@ -288,9 +300,15 @@ namespace Toolbelt.Blazor.SpeechSynthesis
                     {
                         if (!this.Options.DisableClientScriptAutoInjection)
                         {
-                            var version = this.GetVersionText();
-                            var scriptPath = "_content/Toolbelt.Blazor.SpeechSynthesis/script.min.js?v=" + version;
-                            await this.JSRuntime.InvokeVoidAsync("eval", "new Promise(r=>((d,t,s)=>(h=>h.querySelector(t+`[src^=\"${s}\"]`)?r():(e=>(e.src=s,e.onload=r,h.appendChild(e)))(d.createElement(t)))(d.head))(document,'script','" + scriptPath + "'))");
+                            var scriptPath = "_content/Toolbelt.Blazor.SpeechSynthesis/script.min.js";
+
+                            // Add version string for refresh token only navigator is online.
+                            // (If the app runs on the offline mode, the module url with query parameters might cause the "resource not found" error.)
+                            var jsInProcRuntime = this.JSRuntime as IJSInProcessRuntime;
+                            var isOnLine = jsInProcRuntime?.Invoke<bool>("eval", "navigator.onLine") ?? false;
+                            var versionQuery = isOnLine ? $"?v={this.GetVersionText()}" : "";
+
+                            await this.JSRuntime.InvokeVoidAsync("eval", "new Promise(r=>((d,t,s,v)=>(h=>h.querySelector(t+`[src^=\"${s}\"]`)?r():(e=>(e.src=(s+v),e.onload=r,h.appendChild(e)))(d.createElement(t)))(d.head))(document,'script','" + scriptPath + "','" + versionQuery + "'))");
                         }
                         try { await this.JSRuntime.InvokeVoidAsync("eval", "Toolbelt.Blazor.SpeechSynthesis.ready"); } catch { }
                         this._JSLoaded = true;

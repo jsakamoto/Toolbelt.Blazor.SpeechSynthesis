@@ -15,7 +15,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "BlazorWOL.Client": {
+    "SampleSite.Client": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {

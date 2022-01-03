@@ -1,3 +1,6 @@
+v.9.0.1
+- Improve: PWA offline support
+
 v.9.0.0
 - Improve: load the helper JavaScript by Blazor JavaScript isolation feature (ES2015 module system) instead of using "eval".
 

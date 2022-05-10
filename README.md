@@ -18,7 +18,7 @@ This is a class library for Blazor app (both "WebAssembly App" client-side model
 
 **Step.1-2** Register "SpeechSynthesis" service into the DI container.
 
-If the project is a Blazor Server App or a Blazor WebAssembly App ver.3.1 Preview 4 or earlyer, add the code into the `ConfigureService` method in the `Startup` class of your Blazor application.
+If the project is a Blazor Server App or a Blazor WebAssembly App ver.3.1 Preview 4 or earlier, add the code into the `ConfigureService` method in the `Startup` class of your Blazor application.
 
 ```csharp
 // Startup.cs
@@ -81,7 +81,7 @@ public class Program
 }
 ```
 
-You can also speak with detail parameters, such as picth, rate, volume, by using `SpeechSynthesisUtterance` object.
+You can also speak with detail parameters, such as pitch, rate, volume, by using `SpeechSynthesisUtterance` object.
 
 ```csharp
   void onClickSpeak() {
@@ -121,7 +121,7 @@ If you want to chose type of voices, you can do it with `GetVoicesAsync()` metho
 
 ## Release Note
 
-Release notes is [here.](https://github.com/jsakamoto/Toolbelt.Blazor.SpeechSynthesis/blob/master/RELEASE-NOTES.txt)
+Release notes is [here](https://github.com/jsakamoto/Toolbelt.Blazor.SpeechSynthesis/blob/master/RELEASE-NOTES.txt).
 
 ## License
 

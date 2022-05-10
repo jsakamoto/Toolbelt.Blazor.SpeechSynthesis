@@ -15,7 +15,8 @@ namespace SampleSite.Components.Pages
         [SupplyParameterFromQuery, Parameter]
         public string? VoiceId { get; set; }
 
-        private string Lang = "";
+        [SupplyParameterFromQuery, Parameter]
+        public string? Lang { get; set; }
 
         private double Pitch = 1.0;
 
@@ -55,6 +56,7 @@ namespace SampleSite.Components.Pages
             {
                 [nameof(this.Text)] = this.Text,
                 [nameof(this.VoiceId)] = this.VoiceId,
+                [nameof(this.Lang)] = this.Lang,
             });
             this.NavigationManager.NavigateTo(url, replace: true);
         }

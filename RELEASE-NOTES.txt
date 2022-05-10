@@ -1,3 +1,6 @@
+v.9.0.2
+- Fix: typo in the README.md
+
 v.9.0.1
 - Improve: PWA offline support
 

@@ -74,6 +74,21 @@ export var Toolbelt;
             function resume() { if (available)
                 speechSynthesis.resume(); }
             SpeechSynthesis.resume = resume;
+            (function (body, clickEventName) {
+                function f() {
+                    try {
+                        const u = new SpeechSynthesisUtterance('');
+                        u.volume = 0;
+                        speechSynthesis.speak(u);
+                    }
+                    catch (e) {
+                        console.error(e);
+                    }
+                    body.removeEventListener(clickEventName, f);
+                }
+                ;
+                body.addEventListener(clickEventName, f);
+            })(document.body, 'click');
         })(SpeechSynthesis = Blazor.SpeechSynthesis || (Blazor.SpeechSynthesis = {}));
     })(Blazor = Toolbelt.Blazor || (Toolbelt.Blazor = {}));
 })(Toolbelt || (Toolbelt = {}));

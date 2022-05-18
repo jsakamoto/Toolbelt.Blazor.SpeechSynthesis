@@ -87,4 +87,20 @@ export namespace Toolbelt.Blazor.SpeechSynthesis {
     export function pause(): void { if (available) speechSynthesis.pause(); }
 
     export function resume(): void { if (available) speechSynthesis.resume(); }
+
+    // The work around for iOS
+    // - https://stackoverflow.com/a/62587365/1268000
+
+    (function (body: HTMLElement, clickEventName:'click') {
+        function f() {
+            try {
+                const u = new SpeechSynthesisUtterance('');
+                u.volume = 0;
+                speechSynthesis.speak(u);
+            }
+            catch (e) { console.error(e); }
+            body.removeEventListener(clickEventName, f);
+        };
+        body.addEventListener(clickEventName, f);
+    })(document.body,'click');
 }

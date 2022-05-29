@@ -1,3 +1,6 @@
+v.9.0.4
+- Fix: it will crash when the platform doesn't support speechSynthesis.addEventListener
+
 v.9.0.3
 - Fixed Issue #3: implemented a workaround for iOS
 

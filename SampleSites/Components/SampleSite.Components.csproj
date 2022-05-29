@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Toolbelt.Blazor.SpeechSynthesis" Version="9.0.3" />
+    <PackageReference Include="Toolbelt.Blazor.SpeechSynthesis" Version="9.0.4" />
     <!--<ProjectReference Include="..\..\Toolbelt.Blazor.SpeechSynthesis\Toolbelt.Blazor.SpeechSynthesis.csproj" />-->
   </ItemGroup>
 

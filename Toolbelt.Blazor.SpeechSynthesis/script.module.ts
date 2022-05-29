@@ -13,6 +13,7 @@ export namespace Toolbelt.Blazor.SpeechSynthesis {
 
     const onVoicesChanged = (available && speechSynthesis.getVoices().length === 0) ?
         new Promise<void>(resolve => {
+            if (typeof (speechSynthesis.addEventListener) === 'undefined') resolve();
             speechSynthesis.addEventListener('voiceschanged', () => {
                 if (speechSynthesis.getVoices().length > 0) resolve();
             })
@@ -91,7 +92,7 @@ export namespace Toolbelt.Blazor.SpeechSynthesis {
     // The work around for iOS
     // - https://stackoverflow.com/a/62587365/1268000
 
-    (function (body: HTMLElement, clickEventName:'click') {
+    (function (body: HTMLElement, clickEventName: 'click') {
         function f() {
             try {
                 const u = new SpeechSynthesisUtterance('');
@@ -102,5 +103,5 @@ export namespace Toolbelt.Blazor.SpeechSynthesis {
             body.removeEventListener(clickEventName, f);
         };
         body.addEventListener(clickEventName, f);
-    })(document.body,'click');
+    })(document.body, 'click');
 }

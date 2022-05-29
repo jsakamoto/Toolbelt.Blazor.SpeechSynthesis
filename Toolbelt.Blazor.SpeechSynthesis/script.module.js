@@ -8,6 +8,8 @@ export var Toolbelt;
             const available = typeof speechSynthesis.getVoices !== 'undefined';
             const onVoicesChanged = (available && speechSynthesis.getVoices().length === 0) ?
                 new Promise(resolve => {
+                    if (typeof (speechSynthesis.addEventListener) === 'undefined')
+                        resolve();
                     speechSynthesis.addEventListener('voiceschanged', () => {
                         if (speechSynthesis.getVoices().length > 0)
                             resolve();

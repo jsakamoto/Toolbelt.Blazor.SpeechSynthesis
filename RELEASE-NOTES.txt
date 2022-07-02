@@ -1,3 +1,10 @@
+v.10.0.0
+- Fix: In many cases, it doesn't speak after components are initialized immediately.
+- Improve: Added asynchronous versions for primary operations methods such as speak, cancel, etc.
+- BREAKING CHANGE: Drop support for .NET Standard 2.0. Instead, It supports .NET Standard 2.1.
+- BREAKING CHANGE: The type of event argument were changed to "EventArgs<SpeachSynthesisStatus>" from "EventArgs".
+- DEPRECATED: Synchronous versions for primary operations methods such as speak, cancel, etc., were deprecated.
+
 v.9.0.4
 - Fix: it will crash when the platform doesn't support speechSynthesis.addEventListener
 

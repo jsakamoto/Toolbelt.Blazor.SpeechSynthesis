@@ -1,13 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net5.0;net6.0</TargetFrameworks>
-    <LangVersion>8.0</LangVersion>
-    <Version>9.0.4</Version>
+    <TargetFrameworks>netstandard2.1;net5.0;net6.0</TargetFrameworks>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>nullable</WarningsAsErrors>
+    <Version>10.0.0</Version>
     <RazorLangVersion>3.0</RazorLangVersion>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <TypeScriptToolsVersion>3.0</TypeScriptToolsVersion>
-    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+    <TypeScriptCompileBlocked>false</TypeScriptCompileBlocked>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildProjectName).xml</DocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
     <GeneratePackageOnBuild Condition=" '$(Configuration)' == 'Release' ">true</GeneratePackageOnBuild>
@@ -21,7 +23,7 @@
     <PackageOutputPath>..\_dist\</PackageOutputPath>
     <PackageIcon>nupkg-icon.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <DefineConstants Condition=" '$(TargetFramework)' != 'netstandard2.0' ">$(DefineConstants);ENABLE_JSMODULE</DefineConstants>
+    <DefineConstants Condition=" '$(TargetFramework)' != 'netstandard2.1' ">$(DefineConstants);ENABLE_JSMODULE</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -31,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="3.7.4">
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.7.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -40,7 +42,7 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.1' ">
     <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.1.0" />
   </ItemGroup>

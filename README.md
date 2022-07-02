@@ -1,4 +1,4 @@
-# Blazor SpeechSynthesis [![NuGet Package](https://img.shields.io/nuget/v/Toolbelt.Blazor.SpeechSynthesis.svg)](https://www.nuget.org/packages/Toolbelt.Blazor.SpeechSynthesis/)
+﻿# Blazor SpeechSynthesis [![NuGet Package](https://img.shields.io/nuget/v/Toolbelt.Blazor.SpeechSynthesis.svg)](https://www.nuget.org/packages/Toolbelt.Blazor.SpeechSynthesis/)
 
 ## Summary
 
@@ -75,8 +75,8 @@ public class Program
 
   string Text;
 
-  void onClickSpeak() {
-    this.SpeechSynthesis.Speak(this.Text); // <-- Speak!
+  async Task onClickSpeak() {
+    await this.SpeechSynthesis.SpeakAsync(this.Text); // 👈 Speak!
   }
 }
 ```
@@ -84,7 +84,7 @@ public class Program
 You can also speak with detail parameters, such as pitch, rate, volume, by using `SpeechSynthesisUtterance` object.
 
 ```csharp
-  void onClickSpeak() {
+  async Task onClickSpeak() {
     var utterancet = new SpeechSynthesisUtterance {
         Text = this.Text,
         Lang = "en-US", // BCP 47 language tag
@@ -92,7 +92,7 @@ You can also speak with detail parameters, such as pitch, rate, volume, by using
         Rate = 1.0, // 0.1 ~ 10.0 (Default 1.0)
         Volume = 1.0 // 0.0 ~ 1.0 (Default 1.0)
     }
-    this.SpeechSynthesis.Speak(utterancet); // <-- Speak!
+    await this.SpeechSynthesis.SpeakAsync(utterancet); // 👈 Speak!
   }
 ```
 
@@ -110,12 +110,12 @@ If you want to chose type of voices, you can do it with `GetVoicesAsync()` metho
     }
   }
 
-  void onClickSpeak() {
+  async Task onClickSpeak() {
     var utterancet = new SpeechSynthesisUtterance {
         Text = this.Text,
         Voice = this.Voices.FirstOrDefault(v => v.Name.Contains("Haruka"));
     }
-    this.SpeechSynthesis.Speak(utterancet); // <-- Speak with "Haruka"'s voice!
+    await this.SpeechSynthesis.SpeakAsync(utterancet); // 👈 Speak with "Haruka"'s voice!
   }
 ```
 

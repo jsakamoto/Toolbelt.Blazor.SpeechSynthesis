@@ -5,7 +5,9 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
+using Toolbelt.Blazor.SpeechSynthesis.Internals;
 
 namespace Toolbelt.Blazor.SpeechSynthesis
 {
@@ -23,23 +25,15 @@ namespace Toolbelt.Blazor.SpeechSynthesis
 
         private readonly IJSRuntime JSRuntime;
 
+        private readonly ILogger Logger;
+
         private readonly SemaphoreSlim Syncer = new SemaphoreSlim(1, 1);
 
         private bool _JSLoaded;
 
-        private Task LastRefreshTask = null;
+        private SpeechSynthesisStatus? _StatusCache = null;
 
-        private DotNetObjectReference<SpeechSynthesis> _ObjectRefOfThis;
-
-        private bool _Available;
-
-        private bool _Paused;
-
-        private bool _Pending;
-
-        private bool _Speaking;
-
-        private List<SpeechSynthesisVoice> _Voices;
+        private List<SpeechSynthesisVoice>? _Voices;
 
         private readonly object _EventHandledUtterancesLock = new object();
 
@@ -48,87 +42,97 @@ namespace Toolbelt.Blazor.SpeechSynthesis
         /// <summary>
         /// Gets a value that indicates whether the Web Speech API is available or not.
         /// </summary>
-        public bool Available => this.Refresh()._Available;
+        public ValueTask<bool> AvailableAsync => this.GetStatusAsync(s => s.Available);
+
+        #region DEPRECATED
+
+        /// <summary>
+        /// [Deprecated] use <see cref="AvailableAsync"/> or <see cref="GetStatusAsync"/> instead.
+        /// </summary>
+        [Obsolete("use \"AvailableAsync\" or \"GetStatusAsync\" instead."), EditorBrowsable(EditorBrowsableState.Never)]
+        public bool Available => this._StatusCache?.Available ?? false;
+
+        #endregion
 
         /// <summary>
         /// Gets a value that indicates whether the SpeechSynthesis object is in a paused state or not.
         /// </summary>
-        public bool Paused => this.Refresh()._Paused;
+        public bool Paused => this._StatusCache?.Paused ?? false;
 
         /// <summary>
         /// Gets a value that indicates whether the utterance queue contains as-yet-unspoken utterances or not.
         /// </summary>
-        public bool Pending => this.Refresh()._Pending;
+        public bool Pending => this._StatusCache?.Pending ?? false;
 
         /// <summary>
         /// Gets a value that indicates whether an utterance is currently in the process of being spoken (includes SpeechSynthesis is in a paused state) or not.
         /// </summary>
-        public bool Speaking => this.Refresh()._Speaking;
+        public bool Speaking => this._StatusCache?.Speaking ?? false;
 
         /// <summary>
         /// Occurs when the utterance has begun to be spoken.
         /// </summary>
-        public event EventHandler UtteranceStarted;
+        public event EventHandler? UtteranceStarted;
 
         /// <summary>
         /// Occurs when the spoken utterance reaches a word or sentence boundary.
         /// </summary>
-        public event EventHandler UtteranceReachedBoundary;
+        public event EventHandler? UtteranceReachedBoundary;
 
         /// <summary>
         /// Occurs when the spoken utterance reaches a named SSML "mark" tag.
         /// </summary>
-        public event EventHandler UtteranceReachedMark;
+        public event EventHandler? UtteranceReachedMark;
 
         /// <summary>
         /// Occurs when the utterance is paused part way through.
         /// </summary>
-        public event EventHandler UtterancePaused;
+        public event EventHandler? UtterancePaused;
 
         /// <summary>
         /// Occurs when a paused utterance is resumed.
         /// </summary>
-        public event EventHandler UtteranceResumed;
+        public event EventHandler? UtteranceResumed;
 
         /// <summary>
         /// Occurs when the utterance has finished being spoken.
         /// </summary>
-        public event EventHandler UtteranceEnded;
+        public event EventHandler? UtteranceEnded;
 
         /// <summary>
         /// Occurs when an error occurs that prevents the utterance from being succesfully spoken.
         /// </summary>
-        public event EventHandler UtteranceError;
+        public event EventHandler? UtteranceError;
 
-        internal SpeechSynthesis(IJSRuntime jSRuntime, SpeechSynthesisOptions options)
+        /// <summary>
+        /// Initialize a new instance of the SpeechSynthesis class.
+        /// </summary>
+        internal SpeechSynthesis(IJSRuntime jSRuntime, ILogger logger, SpeechSynthesisOptions options)
         {
             this.JSRuntime = jSRuntime;
+            this.Logger = logger;
             this.Options = options;
         }
 
-        private DotNetObjectReference<SpeechSynthesis> GetObjectRef()
+        /// <summary>
+        /// Get the current status of the Web Speech API SpeechSynthesis object.
+        /// </summary>
+        /// <returns>Current status of the Web Speech API SpeechSynthesis object.</returns>
+        public async ValueTask<SpeechSynthesisStatus> GetStatusAsync()
         {
-            if (this._ObjectRefOfThis == null) this._ObjectRefOfThis = DotNetObjectReference.Create(this);
-            return this._ObjectRefOfThis;
+            this._StatusCache = await this.InvokeJavaScriptAsync<SpeechSynthesisStatus>("getStatus");
+            return this._StatusCache;
         }
 
-        internal SpeechSynthesis Refresh()
+        private async ValueTask<T> GetStatusAsync<T>(Func<SpeechSynthesisStatus, T> selector)
         {
-            if ((this.LastRefreshTask?.IsCompleted ?? true) == true)
-            {
-                this.LastRefreshTask?.Dispose();
-                this.LastRefreshTask = this.InvokeJavaScriptAsync<object>("refresh", this.GetObjectRef()).AsTask();
-            }
-            return this;
+            var stat = await this.GetStatusAsync();
+            return selector(stat);
         }
 
-        [JSInvokable(nameof(UpdateStatus)), EditorBrowsable(EditorBrowsableState.Never)]
-        public void UpdateStatus(bool available, bool paused, bool pending, bool speaking)
+        private void UpdateStatus(SpeechSynthesisStatusEventArgs args)
         {
-            this._Available = available;
-            this._Paused = paused;
-            this._Pending = pending;
-            this._Speaking = speaking;
+            this._StatusCache = args.Status;
         }
 
         /// <summary>
@@ -148,21 +152,55 @@ namespace Toolbelt.Blazor.SpeechSynthesis
             return this._Voices;
         }
 
+        #region DEPRECATED
+
+        /// <summary>
+        /// [Deprecated] Use <see cref="SpeakAsync(string)"/> instead.
+        /// </summary>
+        [Obsolete("Use \"SpeakAsync()\" instead."), EditorBrowsable(EditorBrowsableState.Never)]
+        public void Speak(string text) => this.SpeakAsync(text).AsTask().WithLogException(this.Logger);
+
+        /// <summary>
+        /// [Deprecated] Use <see cref="SpeakAsync(SpeechSynthesisUtterance)"/> instead.
+        /// </summary>
+        [Obsolete("Use \"SpeakAsync()\" instead."), EditorBrowsable(EditorBrowsableState.Never)]
+        public void Speak(SpeechSynthesisUtterance utterance) => this.SpeakAsync(utterance).AsTask().WithLogException(this.Logger);
+
+        /// <summary>
+        /// [Deprecated] Use <see cref="CancelAsync"/> instead.
+        /// </summary>
+        [Obsolete("Use \"CancelAsync\" instead."), EditorBrowsable(EditorBrowsableState.Never)]
+        public void Cancel() { this.CancelAsync().AsTask().WithLogException(this.Logger); }
+
+        /// <summary>
+        /// [Deprecated] Use <see cref="PauseAsync"/> instead.
+        /// </summary>
+        [Obsolete("Use \"PauseAsync\" instead."), EditorBrowsable(EditorBrowsableState.Never)]
+        public void Pause() { this.PauseAsync().AsTask().WithLogException(this.Logger); }
+
+        /// <summary>
+        /// [Deprecated] Use <see cref="ResumeAsync"/> instead.
+        /// </summary>
+        [Obsolete("Use \"ResumeAsync\" instead."), EditorBrowsable(EditorBrowsableState.Never)]
+        public void Resume() { this.ResumeAsync().AsTask().WithLogException(this.Logger); }
+
+        #endregion
+
         /// <summary>
         /// Adds an utterance initialized with specified text to the utterance queue.
         /// <para>it will be spoken when any other utterances queued before it have been spoken.</para>
         /// </summary>
-        public void Speak(string text) => this.Speak(new SpeechSynthesisUtterance { Text = text });
-
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        public ValueTask SpeakAsync(string text) => this.SpeakAsync(new SpeechSynthesisUtterance { Text = text });
 
         /// <summary>
         /// Adds an utterance to the utterance queue.
         /// <para>it will be spoken when any other utterances queued before it have been spoken.</para>
         /// </summary>
-        public void Speak(SpeechSynthesisUtterance utterance)
+        public async ValueTask SpeakAsync(SpeechSynthesisUtterance utterance)
         {
-            if (this.Available)
+            if (this._StatusCache == null) await this.GetStatusAsync();
+
+            if (this._StatusCache!.Available)
             {
                 lock (this._EventHandledUtterancesLock)
                 {
@@ -185,26 +223,33 @@ namespace Toolbelt.Blazor.SpeechSynthesis
                         this._EventHandledUtterances = eventHandledUtterances.Select(item => item.WeakRef).ToArray();
                 }
 
-                this.InvokeJavaScriptAsync<object>("speak", this.GetObjectRef(), utterance, utterance.GetObjectRef());
+                this._StatusCache = await this.InvokeJavaScriptAsync<SpeechSynthesisStatus>("speak", utterance, utterance.GetObjectRef());
             }
         }
 
         /// <summary>
         /// Removes all utterances from the utterance queue.
         /// </summary>
-        public void Cancel() { if (this.Available) this.InvokeJavaScriptAsync<object>("cancel"); }
+        public async ValueTask CancelAsync()
+        {
+            this._StatusCache = await this.InvokeJavaScriptAsync<SpeechSynthesisStatus>("cancel");
+        }
 
         /// <summary>
         /// Puts the SpeechSynthesis object into a paused state.
         /// </summary>
-        public void Pause() { if (this.Available) this.InvokeJavaScriptAsync<object>("pause"); }
+        public async ValueTask PauseAsync()
+        {
+            this._StatusCache = await this.InvokeJavaScriptAsync<SpeechSynthesisStatus>("pause");
+        }
 
         /// <summary>
         /// Puts the SpeechSynthesis object into a non-paused state if it was already paused.
         /// </summary>
-        public void Resume() { if (this.Available) this.InvokeJavaScriptAsync<object>("resume"); }
-
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        public async ValueTask ResumeAsync()
+        {
+            this._StatusCache = await this.InvokeJavaScriptAsync<SpeechSynthesisStatus>("resume");
+        }
 
         private void HandleEvents(SpeechSynthesisUtterance utterancet)
         {
@@ -217,26 +262,26 @@ namespace Toolbelt.Blazor.SpeechSynthesis
             utterancet.Error += this.OnError;
         }
 
-        private void OnStart(object sender, EventArgs args) { UtteranceStarted?.Invoke(sender, args); }
-        private void OnBoundary(object sender, EventArgs args) { UtteranceReachedBoundary?.Invoke(sender, args); }
-        private void OnMark(object sender, EventArgs args) { UtteranceReachedMark?.Invoke(sender, args); }
-        private void OnPause(object sender, EventArgs args) { UtterancePaused?.Invoke(sender, args); }
-        private void OnResume(object sender, EventArgs args) { UtteranceResumed?.Invoke(sender, args); }
-        private void OnEnd(object sender, EventArgs args) { UtteranceEnded?.Invoke(sender, args); }
-        private void OnError(object sender, EventArgs args) { UtteranceError?.Invoke(sender, args); }
+        private void OnStart(object? sender, SpeechSynthesisStatusEventArgs args) { this.UpdateStatus(args); UtteranceStarted?.Invoke(sender, args); }
+        private void OnBoundary(object? sender, SpeechSynthesisStatusEventArgs args) { this.UpdateStatus(args); UtteranceReachedBoundary?.Invoke(sender, args); }
+        private void OnMark(object? sender, SpeechSynthesisStatusEventArgs args) { this.UpdateStatus(args); UtteranceReachedMark?.Invoke(sender, args); }
+        private void OnPause(object? sender, SpeechSynthesisStatusEventArgs args) { this.UpdateStatus(args); UtterancePaused?.Invoke(sender, args); }
+        private void OnResume(object? sender, SpeechSynthesisStatusEventArgs args) { this.UpdateStatus(args); UtteranceResumed?.Invoke(sender, args); }
+        private void OnEnd(object? sender, SpeechSynthesisStatusEventArgs args) { this.UpdateStatus(args); UtteranceEnded?.Invoke(sender, args); }
+        private void OnError(object? sender, SpeechSynthesisStatusEventArgs args) { this.UpdateStatus(args); UtteranceError?.Invoke(sender, args); }
 
         private string GetVersionText()
         {
             var assembly = this.GetType().Assembly;
             var version = assembly
                 .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
-                .InformationalVersion ?? assembly.GetName().Version.ToString();
+                .InformationalVersion ?? assembly.GetName().Version?.ToString() ?? "0.0.0";
             return version;
         }
 
 #if ENABLE_JSMODULE
 
-        private IJSObjectReference _JSModule = null;
+        private IJSObjectReference? _JSModule = null;
 
         private async ValueTask<T> InvokeJavaScriptAsync<T>(string identifier, params object[] args)
         {
@@ -279,9 +324,9 @@ namespace Toolbelt.Blazor.SpeechSynthesis
 
         public async ValueTask DisposeAsync()
         {
-            if (_JSModule != null)
+            if (this._JSModule != null)
             {
-                try { await _JSModule.DisposeAsync(); }
+                try { await this._JSModule.DisposeAsync(); }
 #if NET6_0_OR_GREATER
                 catch (JSDisconnectedException) { }
 #endif

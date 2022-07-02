@@ -7,12 +7,12 @@ namespace Toolbelt.Blazor.SpeechSynthesis
 
         public bool Default { get; set; }
 
-        public string Lang { get; set; }
+        public string? Lang { get; set; }
 
         public bool LocalService { get; set; }
 
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
-        public string VoiceURI { get; set; }
+        public string? VoiceURI { get; set; }
     }
 }

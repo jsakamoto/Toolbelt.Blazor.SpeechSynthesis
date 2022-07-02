@@ -13,7 +13,7 @@ namespace Toolbelt.Blazor.SpeechSynthesis
         /// Gets or sets the BCP 47 language tag of the utterance.
         /// <para>If unset (empty string), the app's (i.e. the &lt;html&gt; lang value) lang will be used, or the user-agent default if that is unset too.</para>
         /// </summary>
-        public string Lang { get; set; } = "";
+        public string? Lang { get; set; } = "";
 
         /// <summary>
         /// Gets or sets the pitch at which the utterance will be spoken at.
@@ -31,7 +31,7 @@ namespace Toolbelt.Blazor.SpeechSynthesis
         /// Gets or sets the text that will be synthesised when the utterance is spoken.
         /// <para>The text may be provided as plain text, or a well-formed SSML document.</para>
         /// </summary>
-        public string Text { get; set; } = "";
+        public string? Text { get; set; } = "";
 
         /// <summary>
         /// Gets or sets the volume that the utterance will be spoken at.
@@ -44,94 +44,94 @@ namespace Toolbelt.Blazor.SpeechSynthesis
         /// <para>This should be set to one of the SpeechSynthesisVoice objects returned by SpeechSynthesis.GetVoicesAsync().</para>
         /// <para>If not set (it will be null) by the time the utterance is spoken, the voice used will be the most suitable default voice available for the utterance's lang setting.</para>
         /// </summary>
-        public SpeechSynthesisVoice Voice { get; set; }
+        public SpeechSynthesisVoice? Voice { get; set; }
 
         /// <summary>
         /// Occurs when the utterance has begun to be spoken.
         /// </summary>
-        public event EventHandler Start;
+        public event EventHandler<SpeechSynthesisStatusEventArgs>? Start;
 
         /// <summary>
         /// Occurs when the spoken utterance reaches a word or sentence boundary.
         /// </summary>
-        public event EventHandler Boundary;
+        public event EventHandler<SpeechSynthesisStatusEventArgs>? Boundary;
 
         /// <summary>
         /// Occurs when the spoken utterance reaches a named SSML "mark" tag.
         /// </summary>
-        public event EventHandler Mark;
+        public event EventHandler<SpeechSynthesisStatusEventArgs>? Mark;
 
         /// <summary>
         /// Occurs when the utterance is paused part way through.
         /// </summary>
-        public event EventHandler Pause;
+        public event EventHandler<SpeechSynthesisStatusEventArgs>? Pause;
 
         /// <summary>
         /// Occurs when a paused utterance is resumed.
         /// </summary>
-        public event EventHandler Resume;
+        public event EventHandler<SpeechSynthesisStatusEventArgs>? Resume;
 
         /// <summary>
         /// Occurs when the utterance has finished being spoken.
         /// </summary>
-        public event EventHandler End;
+        public event EventHandler<SpeechSynthesisStatusEventArgs>? End;
 
         /// <summary>
         /// Occurs when an error occurs that prevents the utterance from being succesfully spoken.
         /// </summary>
-        public event EventHandler Error;
+        public event EventHandler<SpeechSynthesisStatusEventArgs>? Error;
 
-        private DotNetObjectReference<SpeechSynthesisUtterance> _ObjectRef;
+        private DotNetObjectReference<SpeechSynthesisUtterance>? _ObjectRef;
 
         private int _ObjectRefCounter = 0;
 
         internal DotNetObjectReference<SpeechSynthesisUtterance> GetObjectRef()
         {
-            _ObjectRefCounter++;
-            if (_ObjectRefCounter == 1) _ObjectRef = DotNetObjectReference.Create(this);
-            return _ObjectRef;
+            this._ObjectRefCounter++;
+            if (this._ObjectRefCounter == 1) this._ObjectRef = DotNetObjectReference.Create(this);
+            return this._ObjectRef!;
         }
 
         private void ReleaseObjectRef()
         {
-            _ObjectRefCounter--;
-            if (_ObjectRefCounter == 0)
+            this._ObjectRefCounter--;
+            if (this._ObjectRefCounter == 0 && this._ObjectRef != null)
             {
-                _ObjectRef.Dispose();
-                _ObjectRef = null;
+                this._ObjectRef.Dispose();
+                this._ObjectRef = null;
             }
         }
 
         [JSInvokable(nameof(InvokeEvent)), EditorBrowsable(EditorBrowsableState.Never)]
-        public void InvokeEvent(string type)
+        public void InvokeEvent(string type, SpeechSynthesisStatus status)
         {
             switch (type)
             {
                 case "start":
-                    Start?.Invoke(this, EventArgs.Empty);
+                    Start?.Invoke(this, new SpeechSynthesisStatusEventArgs(status));
                     break;
                 case "boundary":
-                    Boundary?.Invoke(this, EventArgs.Empty);
+                    Boundary?.Invoke(this, new SpeechSynthesisStatusEventArgs(status));
                     break;
                 case "mark":
-                    Mark?.Invoke(this, EventArgs.Empty);
+                    Mark?.Invoke(this, new SpeechSynthesisStatusEventArgs(status));
                     break;
                 case "pause":
-                    Pause?.Invoke(this, EventArgs.Empty);
+                    Pause?.Invoke(this, new SpeechSynthesisStatusEventArgs(status));
                     break;
                 case "resume":
-                    Resume?.Invoke(this, EventArgs.Empty);
+                    Resume?.Invoke(this, new SpeechSynthesisStatusEventArgs(status));
                     break;
                 case "end":
-                    End?.Invoke(this, EventArgs.Empty);
-                    ReleaseObjectRef();
+                    End?.Invoke(this, new SpeechSynthesisStatusEventArgs(status));
+                    this.ReleaseObjectRef();
                     break;
                 case "error":
-                    Error?.Invoke(this, EventArgs.Empty);
-                    ReleaseObjectRef();
+                    Error?.Invoke(this, new SpeechSynthesisStatusEventArgs(status));
+                    this.ReleaseObjectRef();
                     break;
                 case "cancel":
-                    ReleaseObjectRef();
+                    this.ReleaseObjectRef();
                     break;
                 default:
                     break;

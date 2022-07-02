@@ -11,9 +11,12 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.1" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Toolbelt.Web.CssClassInlineBuilder" Version="2.0.0" />
+  </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Toolbelt.Blazor.SpeechSynthesis" Version="9.0.4" />
+    <PackageReference Include="Toolbelt.Blazor.SpeechSynthesis" Version="10.0.0" />
     <!--<ProjectReference Include="..\..\Toolbelt.Blazor.SpeechSynthesis\Toolbelt.Blazor.SpeechSynthesis.csproj" />-->
   </ItemGroup>
 

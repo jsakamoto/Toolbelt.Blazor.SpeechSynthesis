@@ -30,8 +30,12 @@ namespace SampleSite.Components.Pages
 
         private readonly SpeechSynthesisUtterance CachedUtterancet = new();
 
+        private bool Available;
+
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
+            this.Available = await this.SpeechSynthesis.AvailableAsync;
+
             if (firstRender)
             {
                 if (this.Text == null) this.Text = "Hello, World!";
@@ -78,17 +82,17 @@ namespace SampleSite.Components.Pages
             this.UpdateUrl();
         }
 
-        void OnClickSpeakButton()
+        async Task OnClickSpeakButton()
         {
             var utterancet = new SpeechSynthesisUtterance();
             this.SetupUtterancet(utterancet);
-            this.SpeechSynthesis.Speak(utterancet);
+            await this.SpeechSynthesis.SpeakAsync(utterancet);
         }
 
-        void OnClickSpeakByCachedButton()
+        async Task OnClickSpeakByCachedButton()
         {
             this.SetupUtterancet(this.CachedUtterancet);
-            this.SpeechSynthesis.Speak(this.CachedUtterancet);
+            await this.SpeechSynthesis.SpeakAsync(this.CachedUtterancet);
         }
 
         void SetupUtterancet(SpeechSynthesisUtterance utterancet)
@@ -101,29 +105,29 @@ namespace SampleSite.Components.Pages
             utterancet.Voice = this.GetVoice();
         }
 
-        void OnClickPauseButton()
+        async Task OnClickPauseButton()
         {
             this.WriteLog("OnClickPauseButton");
             Console.WriteLine($"Speaking is [{this.SpeechSynthesis.Speaking}]");
             if (this.SpeechSynthesis.Speaking)
             {
-                this.SpeechSynthesis.Pause();
+                await this.SpeechSynthesis.PauseAsync();
             }
         }
 
-        void OnClickResumeButton()
+        async Task OnClickResumeButton()
         {
             this.WriteLog("OnClickResumeButton");
             Console.WriteLine($"Paused is [{this.SpeechSynthesis.Paused}]");
             if (this.SpeechSynthesis.Paused)
             {
-                this.SpeechSynthesis.Resume();
+                await this.SpeechSynthesis.ResumeAsync();
             }
         }
 
-        void OnClickCancelButton()
+        async Task OnClickCancelButton()
         {
-            this.SpeechSynthesis.Cancel();
+            await this.SpeechSynthesis.CancelAsync();
         }
 
         void OnClickGC()

@@ -57,14 +57,14 @@
             </div>
         </section>
 
-        <section>
+        <section class="status">
             <h2>Status</h2>
-            <ul style="display:flex;justify-content:space-between; flex-wrap:wrap;">
-                <li>Available ... @SpeechSynthesis.Available</li>
-                <li>Speaking ... @SpeechSynthesis.Speaking</li>
-                <li>Pending ... @SpeechSynthesis.Pending</li>
-                <li>Paused ... @SpeechSynthesis.Paused</li>
-            </ul>
+            <div class="indicators">
+                <div class="@CssClass(new { Active = this.Available })">Available</div>
+                <div class="@CssClass(new { Active = this.SpeechSynthesis.Speaking })">Speaking</div>
+                <div class="@CssClass(new { Active = this.SpeechSynthesis.Pending })">Pending</div>
+                <div class="@CssClass(new { Active = this.SpeechSynthesis.Paused })">Paused</div>
+            </div>
         </section>
 
         <section>

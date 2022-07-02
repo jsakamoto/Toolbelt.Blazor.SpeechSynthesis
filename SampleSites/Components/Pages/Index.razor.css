@@ -1,0 +1,20 @@
+﻿.status .indicators {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+    .status .indicators div {
+        border: solid 1px #888;
+        border-radius: 6px;
+        width: 5rem;
+        text-align: center;
+        padding: 0.2rem 0;
+        background-color: #333;
+        color: #888;
+        margin-bottom: 0.5rem;
+    }
+
+        .status .indicators div.active {
+            color: #6f6;
+        }

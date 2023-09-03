@@ -298,9 +298,13 @@ namespace Toolbelt.Blazor.SpeechSynthesis
 
                             // Add version string for refresh token only navigator is online.
                             // (If the app runs on the offline mode, the module url with query parameters might cause the "resource not found" error.)
+#if NET6_0_OR_GREATER
+                            var isOnLine = await this.JSRuntime.InvokeAsync<bool>("Toolbelt.Blazor.getProperty", "navigator.onLine");
+#else
                             const string moduleScript = "export function isOnLine(){ return navigator.onLine; }";
                             await using var inlineJsModule = await this.JSRuntime.InvokeAsync<IJSObjectReference>("import", "data:text/javascript;charset=utf-8," + Uri.EscapeDataString(moduleScript));
                             var isOnLine = await inlineJsModule.InvokeAsync<bool>("isOnLine");
+#endif
 
                             if (isOnLine) scriptPath += $"?v={this.GetVersionText()}";
 

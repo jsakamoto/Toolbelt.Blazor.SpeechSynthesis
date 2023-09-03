@@ -18,10 +18,10 @@
     "SampleSite.Server": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "http://0.0.0.0:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "applicationUrl": "http://localhost:57530/;https://localhost:57531/"
     }
   }
 }

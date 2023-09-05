@@ -33,7 +33,7 @@ namespace Toolbelt.Blazor.SpeechSynthesis
 
         private SpeechSynthesisStatus? _StatusCache = null;
 
-        private List<SpeechSynthesisVoice>? _Voices;
+        private readonly List<SpeechSynthesisVoice> _Voices = new();
 
         private readonly object _EventHandledUtterancesLock = new object();
 
@@ -140,9 +140,7 @@ namespace Toolbelt.Blazor.SpeechSynthesis
         /// </summary>
         public async Task<IReadOnlyCollection<SpeechSynthesisVoice>> GetVoicesAsync()
         {
-            if (this._Voices == null) this._Voices = new List<SpeechSynthesisVoice>();
-
-            var latestVoices = await this.InvokeJavaScriptAsync<SpeechSynthesisVoiceInternal[]>("getVoices");
+            var latestVoices = await this.GetLatestVoiceAsync();
             var toAddVoices = latestVoices.Where(p1 => !this._Voices.Any(p2 => p1.VoiceIdentity == p2.VoiceIdentity)).ToArray();
             var toRemoveVoices = this._Voices.Where(p1 => !latestVoices.Any(p2 => p1.VoiceIdentity == p2.VoiceIdentity)).ToArray();
 
@@ -150,6 +148,28 @@ namespace Toolbelt.Blazor.SpeechSynthesis
             foreach (var voice in toRemoveVoices) this._Voices.Remove(voice);
 
             return this._Voices;
+        }
+
+        /// <summary>
+        /// Returns a collection of <see cref="SpeechSynthesisVoiceInternal"/> object representing latest all the available voices on the current device.
+        /// </summary>
+        private async ValueTask<IEnumerable<SpeechSynthesisVoiceInternal>> GetLatestVoiceAsync()
+        {
+            // If the app is running in the Blazor WebAssembly, we can get all voices at once
+            // because there is no limit of the size of the data that can be passed between C# and JavaScript.
+            if (this.JSRuntime is IJSInProcessRuntime) return await this.InvokeJavaScriptAsync<SpeechSynthesisVoiceInternal[]>("getVoices");
+
+            // Otherwise, it means the app is running in the Blazor Server, we need to get voices in chunks because
+            // there is a limit of the size of the data that can be passed between C# and JavaScript via the SignalR connection.
+            var numberOfVoices = await this.InvokeJavaScriptAsync<int>("getNumberOfVoices");
+            var voices = new List<SpeechSynthesisVoiceInternal>(numberOfVoices);
+            const int sizeofChunk = 100;
+            for (var i = 0; i < numberOfVoices; i += sizeofChunk)
+            {
+                var voicesChunk = await this.InvokeJavaScriptAsync<SpeechSynthesisVoiceInternal[]>("getVoices", new { Begin = i, End = i + sizeofChunk });
+                voices.AddRange(voicesChunk);
+            }
+            return voices;
         }
 
         #region DEPRECATED
@@ -294,8 +314,6 @@ namespace Toolbelt.Blazor.SpeechSynthesis
                     {
                         if (!this.Options.DisableClientScriptAutoInjection)
                         {
-                            var scriptPath = "./_content/Toolbelt.Blazor.SpeechSynthesis/script.module.min.js";
-
                             // Add version string for refresh token only navigator is online.
                             // (If the app runs on the offline mode, the module url with query parameters might cause the "resource not found" error.)
 #if NET6_0_OR_GREATER
@@ -306,6 +324,7 @@ namespace Toolbelt.Blazor.SpeechSynthesis
                             var isOnLine = await inlineJsModule.InvokeAsync<bool>("isOnLine");
 #endif
 
+                            var scriptPath = "./_content/Toolbelt.Blazor.SpeechSynthesis/script.module.min.js";
                             if (isOnLine) scriptPath += $"?v={this.GetVersionText()}";
 
                             this._JSModule = await this.JSRuntime.InvokeAsync<IJSObjectReference>("import", scriptPath);

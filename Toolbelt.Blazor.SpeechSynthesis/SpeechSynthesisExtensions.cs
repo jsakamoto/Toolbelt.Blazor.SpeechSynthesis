@@ -26,7 +26,7 @@ namespace Toolbelt.Blazor.Extensions.DependencyInjection
                 var jsRuntime = serviceProvider.GetRequiredService<IJSRuntime>();
                 var logger = serviceProvider.GetRequiredService<ILogger<SpeechSynthesis.SpeechSynthesis>>();
                 var speechSynthesis = new SpeechSynthesis.SpeechSynthesis(jsRuntime, logger, options);
-                speechSynthesis.GetStatusAsync().AsTask().WithLogException(logger);
+                if (jsRuntime is IJSInProcessRuntime) speechSynthesis.GetStatusAsync().AsTask().WithLogException(logger);
                 return speechSynthesis;
             });
         }

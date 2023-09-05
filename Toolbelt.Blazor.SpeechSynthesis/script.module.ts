@@ -1,5 +1,10 @@
 export namespace Toolbelt.Blazor.SpeechSynthesis {
 
+    const undefined = 'undefined';
+    const end = 'end';
+    const error = 'error';
+    const _cancel = 'cancel';
+
     interface DotNetObjectRef {
         invokeMethodAsync(methodName: string, ...args: any[]): Promise<any>;
     }
@@ -16,11 +21,11 @@ export namespace Toolbelt.Blazor.SpeechSynthesis {
     }
 
     const speechSynthesis = window.speechSynthesis || ({ paused: false, pending: false, speaking: false } as SpeechSynthesis);
-    const available = typeof speechSynthesis.getVoices !== 'undefined';
+    const available = typeof speechSynthesis.getVoices !== undefined;
 
     const onVoicesChanged = (available && speechSynthesis.getVoices().length === 0) ?
         new Promise<void>(resolve => {
-            if (typeof (speechSynthesis.addEventListener) === 'undefined') resolve();
+            if (typeof (speechSynthesis.addEventListener) === undefined) resolve();
             speechSynthesis.addEventListener('voiceschanged', () => {
                 if (speechSynthesis.getVoices().length > 0) resolve();
             })
@@ -34,26 +39,32 @@ export namespace Toolbelt.Blazor.SpeechSynthesis {
 
     let queue = [] as UtteranceQueue[];
 
-    export function getStatus(): SpeechSynthesisStatus {
-        return { available, paused: speechSynthesis.paused, pending: speechSynthesis.pending, speaking: speechSynthesis.speaking };
+    export const getStatus = () => ({ available, paused: speechSynthesis.paused, pending: speechSynthesis.pending, speaking: speechSynthesis.speaking });
+
+    const getVoicesInternal = async () => {
+        if (!available) return [];
+        await onVoicesChanged;
+        return speechSynthesis.getVoices();
     }
 
-    export function getVoices(): Promise<any[]> {
-        if (!available) return Promise.resolve([] as any[]);
-        return onVoicesChanged
-            .then(() => speechSynthesis.getVoices().map(v => ({
-                default: v.default,
-                lang: v.lang,
-                localService: v.localService,
-                name: v.name,
-                voiceURI: v.voiceURI
-            })));
+    export const getNumberOfVoices = async () => {
+        const rawVoices = await getVoicesInternal();
+        return rawVoices.length;
     }
 
-    export function speak(
-        utterance: SpeechSynthesisUtterance,
-        dotnetUtterance: DotNetObjectRef
-    ): SpeechSynthesisStatus {
+    export const getVoices = async (args?: { begin: number, end: number }) => {
+        const rawVoices = await getVoicesInternal();
+        const voices = rawVoices.map(v => ({
+            default: v.default,
+            lang: v.lang,
+            localService: v.localService,
+            name: v.name,
+            voiceURI: v.voiceURI
+        }));
+        return args ? voices.slice(args.begin, args.end) : voices;
+    }
+
+    export const speak = (utterance: SpeechSynthesisUtterance, dotnetUtterance: DotNetObjectRef): SpeechSynthesisStatus => {
         if (!available) return getStatus();
         if (utterance.voice !== null) {
             const voiceURI = utterance.voice.voiceURI;
@@ -64,11 +75,11 @@ export namespace Toolbelt.Blazor.SpeechSynthesis {
         }
         utterance = Object.assign(new SpeechSynthesisUtterance(), utterance);
 
-        const types = ["boundary", "end", "error", "mark", "pause", "resume", "start"];
+        const types = ["boundary", end, error, "mark", "pause", "resume", "start"];
         const f = function (ev: EventLikeObject): void {
             const stat = getStatus();
             dotnetUtterance.invokeMethodAsync('InvokeEvent', ev.type, stat);
-            if (ev.type === 'end' || ev.type === 'error' || ev.type === 'cancel') {
+            if (ev.type === end || ev.type === error || ev.type === _cancel) {
                 types.forEach(t => utterance.removeEventListener(t, f));
                 queue = queue.filter(q => q.f !== f);
             }
@@ -81,12 +92,12 @@ export namespace Toolbelt.Blazor.SpeechSynthesis {
 
         setTimeout(() => {
             const cancellers = queue.filter(q => q.cancel === true);
-            cancellers.forEach(c => c.f({ type: 'cancel' }));
+            cancellers.forEach(c => c.f({ type: _cancel }));
         }, 0);
         return getStatus();
     }
 
-    export function cancel(): SpeechSynthesisStatus {
+    export const cancel = (): SpeechSynthesisStatus => {
         if (available) {
             speechSynthesis.cancel();
             queue.forEach(q => q.cancel = true);
@@ -94,14 +105,14 @@ export namespace Toolbelt.Blazor.SpeechSynthesis {
         return getStatus();
     }
 
-    export function pause(): SpeechSynthesisStatus { if (available) speechSynthesis.pause(); return getStatus(); }
+    export const pause = (): SpeechSynthesisStatus => { if (available) speechSynthesis.pause(); return getStatus(); }
 
-    export function resume(): SpeechSynthesisStatus { if (available) speechSynthesis.resume(); return getStatus(); }
+    export const resume = (): SpeechSynthesisStatus => { if (available) speechSynthesis.resume(); return getStatus(); }
 
     // The work around for iOS
     // - https://stackoverflow.com/a/62587365/1268000
 
-    (function (body: HTMLElement, clickEventName: 'click') {
+    ((body: HTMLElement, clickEventName: 'click') => {
         function f() {
             try {
                 const u = new SpeechSynthesisUtterance('');

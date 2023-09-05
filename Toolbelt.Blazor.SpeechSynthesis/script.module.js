@@ -4,11 +4,15 @@ export var Toolbelt;
     (function (Blazor) {
         var SpeechSynthesis;
         (function (SpeechSynthesis) {
+            const undefined = 'undefined';
+            const end = 'end';
+            const error = 'error';
+            const _cancel = 'cancel';
             const speechSynthesis = window.speechSynthesis || { paused: false, pending: false, speaking: false };
-            const available = typeof speechSynthesis.getVoices !== 'undefined';
+            const available = typeof speechSynthesis.getVoices !== undefined;
             const onVoicesChanged = (available && speechSynthesis.getVoices().length === 0) ?
                 new Promise(resolve => {
-                    if (typeof (speechSynthesis.addEventListener) === 'undefined')
+                    if (typeof (speechSynthesis.addEventListener) === undefined)
                         resolve();
                     speechSynthesis.addEventListener('voiceschanged', () => {
                         if (speechSynthesis.getVoices().length > 0)
@@ -17,26 +21,31 @@ export var Toolbelt;
                 }) :
                 Promise.resolve();
             let queue = [];
-            function getStatus() {
-                return { available, paused: speechSynthesis.paused, pending: speechSynthesis.pending, speaking: speechSynthesis.speaking };
-            }
-            SpeechSynthesis.getStatus = getStatus;
-            function getVoices() {
+            SpeechSynthesis.getStatus = () => ({ available, paused: speechSynthesis.paused, pending: speechSynthesis.pending, speaking: speechSynthesis.speaking });
+            const getVoicesInternal = async () => {
                 if (!available)
-                    return Promise.resolve([]);
-                return onVoicesChanged
-                    .then(() => speechSynthesis.getVoices().map(v => ({
+                    return [];
+                await onVoicesChanged;
+                return speechSynthesis.getVoices();
+            };
+            SpeechSynthesis.getNumberOfVoices = async () => {
+                const rawVoices = await getVoicesInternal();
+                return rawVoices.length;
+            };
+            SpeechSynthesis.getVoices = async (args) => {
+                const rawVoices = await getVoicesInternal();
+                const voices = rawVoices.map(v => ({
                     default: v.default,
                     lang: v.lang,
                     localService: v.localService,
                     name: v.name,
                     voiceURI: v.voiceURI
-                })));
-            }
-            SpeechSynthesis.getVoices = getVoices;
-            function speak(utterance, dotnetUtterance) {
+                }));
+                return args ? voices.slice(args.begin, args.end) : voices;
+            };
+            SpeechSynthesis.speak = (utterance, dotnetUtterance) => {
                 if (!available)
-                    return getStatus();
+                    return SpeechSynthesis.getStatus();
                 if (utterance.voice !== null) {
                     const voiceURI = utterance.voice.voiceURI;
                     const lang = utterance.voice.lang;
@@ -45,11 +54,11 @@ export var Toolbelt;
                         .find(v => v.voiceURI === voiceURI && v.lang.replace(/_/ig, '-') === lang);
                 }
                 utterance = Object.assign(new SpeechSynthesisUtterance(), utterance);
-                const types = ["boundary", "end", "error", "mark", "pause", "resume", "start"];
+                const types = ["boundary", end, error, "mark", "pause", "resume", "start"];
                 const f = function (ev) {
-                    const stat = getStatus();
+                    const stat = SpeechSynthesis.getStatus();
                     dotnetUtterance.invokeMethodAsync('InvokeEvent', ev.type, stat);
-                    if (ev.type === 'end' || ev.type === 'error' || ev.type === 'cancel') {
+                    if (ev.type === end || ev.type === error || ev.type === _cancel) {
                         types.forEach(t => utterance.removeEventListener(t, f));
                         queue = queue.filter(q => q.f !== f);
                     }
@@ -59,26 +68,22 @@ export var Toolbelt;
                 speechSynthesis.speak(utterance);
                 setTimeout(() => {
                     const cancellers = queue.filter(q => q.cancel === true);
-                    cancellers.forEach(c => c.f({ type: 'cancel' }));
+                    cancellers.forEach(c => c.f({ type: _cancel }));
                 }, 0);
-                return getStatus();
-            }
-            SpeechSynthesis.speak = speak;
-            function cancel() {
+                return SpeechSynthesis.getStatus();
+            };
+            SpeechSynthesis.cancel = () => {
                 if (available) {
                     speechSynthesis.cancel();
                     queue.forEach(q => q.cancel = true);
                 }
-                return getStatus();
-            }
-            SpeechSynthesis.cancel = cancel;
-            function pause() { if (available)
-                speechSynthesis.pause(); return getStatus(); }
-            SpeechSynthesis.pause = pause;
-            function resume() { if (available)
-                speechSynthesis.resume(); return getStatus(); }
-            SpeechSynthesis.resume = resume;
-            (function (body, clickEventName) {
+                return SpeechSynthesis.getStatus();
+            };
+            SpeechSynthesis.pause = () => { if (available)
+                speechSynthesis.pause(); return SpeechSynthesis.getStatus(); };
+            SpeechSynthesis.resume = () => { if (available)
+                speechSynthesis.resume(); return SpeechSynthesis.getStatus(); };
+            ((body, clickEventName) => {
                 function f() {
                     try {
                         const u = new SpeechSynthesisUtterance('');

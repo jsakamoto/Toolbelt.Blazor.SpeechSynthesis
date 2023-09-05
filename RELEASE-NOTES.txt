@@ -1,3 +1,7 @@
+v.10.1.0
+- Fix: doesn't work on Blazor Server and MS Edge browser
+- Improve: data protocol is no longer needed for the "script-src" content security policy
+
 v.10.0.0
 - Fix: In many cases, it doesn't speak after components are initialized immediately.
 - Improve: Added asynchronous versions for primary operations methods such as speak, cancel, etc.

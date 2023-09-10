@@ -1,3 +1,6 @@
+v.10.2.0
+- Improve: IL trimming support (It reduces the size of the published app)
+
 v.10.1.0
 - Fix: doesn't work on Blazor Server and MS Edge browser
 - Improve: data protocol is no longer needed for the "script-src" content security policy

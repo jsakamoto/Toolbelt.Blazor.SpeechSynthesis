@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<linker>
+  <assembly fullname="Toolbelt.Blazor.SpeechSynthesis">
+    <type fullname="Toolbelt.Blazor.SpeechSynthesis.SpeechSynthesis" feature="Toolbelt.Blazor.SpeechSynthesis.OptimizeForWasm" featurevalue="true">
+      <method signature="System.Boolean IsInProcessRuntime()" body="stub" value="true" />
+    </type>
+  </assembly>
+</linker>

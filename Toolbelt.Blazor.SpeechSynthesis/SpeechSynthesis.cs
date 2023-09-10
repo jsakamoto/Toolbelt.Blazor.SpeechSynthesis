@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -118,6 +119,9 @@ namespace Toolbelt.Blazor.SpeechSynthesis
         /// Get the current status of the Web Speech API SpeechSynthesis object.
         /// </summary>
         /// <returns>Current status of the Web Speech API SpeechSynthesis object.</returns>
+#if NET6_0_OR_GREATER
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicConstructors, typeof(SpeechSynthesisStatus))]
+#endif
         public async ValueTask<SpeechSynthesisStatus> GetStatusAsync()
         {
             this._StatusCache = await this.InvokeJavaScriptAsync<SpeechSynthesisStatus>("getStatus");
@@ -135,12 +139,24 @@ namespace Toolbelt.Blazor.SpeechSynthesis
             this._StatusCache = args.Status;
         }
 
+        private bool IsInProcessRuntime() => this.JSRuntime is IJSInProcessRuntime;
+
         /// <summary>
         /// Returns a collection of SpeechSynthesisVoice objects representing all the available voices on the current device.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicConstructors, typeof(SpeechSynthesisVoiceInternal))]
+#endif
         public async Task<IReadOnlyCollection<SpeechSynthesisVoice>> GetVoicesAsync()
         {
-            var latestVoices = await this.GetLatestVoiceAsync();
+            var latestVoices = this.IsInProcessRuntime() ?
+                // If the app is running in the Blazor WebAssembly, we can get all voices at once
+                // because there is no limit of the size of the data that can be passed between C# and JavaScript.
+                await this.InvokeJavaScriptAsync<SpeechSynthesisVoiceInternal[]>("getVoices")
+                // Otherwise, it means the app is running in the Blazor Server, we need to get voices in chunks because
+                // there is a limit of the size of the data that can be passed between C# and JavaScript via the SignalR connection.
+                : await this.GetLatestVoiceAsync();
+
             var toAddVoices = latestVoices.Where(p1 => !this._Voices.Any(p2 => p1.VoiceIdentity == p2.VoiceIdentity)).ToArray();
             var toRemoveVoices = this._Voices.Where(p1 => !latestVoices.Any(p2 => p1.VoiceIdentity == p2.VoiceIdentity)).ToArray();
 
@@ -153,14 +169,11 @@ namespace Toolbelt.Blazor.SpeechSynthesis
         /// <summary>
         /// Returns a collection of <see cref="SpeechSynthesisVoiceInternal"/> object representing latest all the available voices on the current device.
         /// </summary>
+#if NET6_0_OR_GREATER
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicConstructors, typeof(SpeechSynthesisVoiceInternal))]
+#endif
         private async ValueTask<IEnumerable<SpeechSynthesisVoiceInternal>> GetLatestVoiceAsync()
         {
-            // If the app is running in the Blazor WebAssembly, we can get all voices at once
-            // because there is no limit of the size of the data that can be passed between C# and JavaScript.
-            if (this.JSRuntime is IJSInProcessRuntime) return await this.InvokeJavaScriptAsync<SpeechSynthesisVoiceInternal[]>("getVoices");
-
-            // Otherwise, it means the app is running in the Blazor Server, we need to get voices in chunks because
-            // there is a limit of the size of the data that can be passed between C# and JavaScript via the SignalR connection.
             var numberOfVoices = await this.InvokeJavaScriptAsync<int>("getNumberOfVoices");
             var voices = new List<SpeechSynthesisVoiceInternal>(numberOfVoices);
             const int sizeofChunk = 100;
@@ -303,7 +316,7 @@ namespace Toolbelt.Blazor.SpeechSynthesis
 
         private IJSObjectReference? _JSModule = null;
 
-        private async ValueTask<T> InvokeJavaScriptAsync<T>(string identifier, params object[] args)
+        private async ValueTask<T> InvokeJavaScriptAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.PublicProperties)] T>(string identifier, params object[] args)
         {
             if (!this._JSLoaded)
             {

@@ -26,8 +26,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!--<PackageReference Include="Toolbelt.Blazor.SpeechSynthesis" Version="10.0.0" />-->
+    <PackageReference Include="Toolbelt.Blazor.SpeechSynthesis" Version="10.2.0" />
+  </ItemGroup>
+
+  <!--
+  <ItemGroup>
     <ProjectReference Include="..\..\Toolbelt.Blazor.SpeechSynthesis\Toolbelt.Blazor.SpeechSynthesis.csproj" />
   </ItemGroup>
+  <Import Project="../../Toolbelt.Blazor.SpeechSynthesis/Build/Toolbelt.Blazor.SpeechSynthesis.targets"/>
+  -->
 
 </Project>

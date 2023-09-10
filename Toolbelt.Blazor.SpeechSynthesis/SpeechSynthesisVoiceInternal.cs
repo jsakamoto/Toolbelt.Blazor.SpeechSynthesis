@@ -5,14 +5,23 @@ namespace Toolbelt.Blazor.SpeechSynthesis
     {
         public string VoiceIdentity => this.VoiceURI + "|" + this.Lang;
 
-        public bool Default { get; set; }
+        public bool Default { get; }
 
-        public string? Lang { get; set; }
+        public string? Lang { get; }
 
-        public bool LocalService { get; set; }
+        public bool LocalService { get; }
 
-        public string? Name { get; set; }
+        public string? Name { get; }
 
-        public string? VoiceURI { get; set; }
+        public string? VoiceURI { get; }
+
+        public SpeechSynthesisVoiceInternal(bool @default, string? lang, bool localService, string? name, string? voiceURI)
+        {
+            this.Default = @default;
+            this.Lang = lang;
+            this.LocalService = localService;
+            this.Name = name;
+            this.VoiceURI = voiceURI;
+        }
     }
 }

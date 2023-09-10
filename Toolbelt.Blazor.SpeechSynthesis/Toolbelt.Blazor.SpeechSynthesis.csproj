@@ -5,7 +5,7 @@
     <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
     <WarningsAsErrors>nullable</WarningsAsErrors>
-    <Version>10.1.0</Version>
+    <Version>10.2.0</Version>
     <RazorLangVersion>3.0</RazorLangVersion>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <TypeScriptToolsVersion>3.0</TypeScriptToolsVersion>
@@ -24,12 +24,19 @@
     <PackageIcon>nupkg-icon.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <DefineConstants Condition=" '$(TargetFramework)' != 'netstandard2.1' ">$(DefineConstants);ENABLE_JSMODULE</DefineConstants>
+    <IsTrimmable Condition=" '$(TargetFramework)' != 'netstandard2.1' AND '$(TargetFramework)' != 'net5.0' ">true</IsTrimmable>
   </PropertyGroup>
 
   <ItemGroup>
     <Content Update="**/*.json" Pack="false" />
     <None Include="..\.assets\nupkg-icon.png" Visible="false" Pack="true" PackagePath="\" />
-    <None Include="..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\README.md" Visible="false" Pack="true" PackagePath="\" />
+    <None Include="Build\Toolbelt.Blazor.SpeechSynthesis.targets" Pack="true" PackagePath="build\Toolbelt.Blazor.SpeechSynthesis.targets" />
+    <None Include="BuildMultiTargeting\Toolbelt.Blazor.SpeechSynthesis.targets" Pack="true" PackagePath="buildMultiTargeting\Toolbelt.Blazor.SpeechSynthesis.targets" />
+    <None Include="BuildTransitive\Toolbelt.Blazor.SpeechSynthesis.targets" Pack="true" PackagePath="buildTransitive\Toolbelt.Blazor.SpeechSynthesis.targets" />
+    <EmbeddedResource Include="ILLink.Substitutions.xml">
+      <LogicalName>ILLink.Substitutions.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>

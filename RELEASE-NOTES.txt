@@ -1,3 +1,7 @@
+v.10.3.0
+- Fix: it didn't work on InteractiveServer mode in .NET 8
+- Improve: IL trimming support (It reduces the size of the published app)
+
 v.10.2.0
 - Improve: IL trimming support (It reduces the size of the published app)
 

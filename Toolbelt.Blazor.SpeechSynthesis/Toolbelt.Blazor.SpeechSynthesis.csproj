@@ -5,7 +5,7 @@
     <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
     <WarningsAsErrors>nullable</WarningsAsErrors>
-    <Version>10.2.0</Version>
+    <PrepareForBuildDependsOn>$(PrepareForBuildDependsOn);UpdateILLinkSubstitutionsXml</PrepareForBuildDependsOn>
     <RazorLangVersion>3.0</RazorLangVersion>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <TypeScriptToolsVersion>3.0</TypeScriptToolsVersion>
@@ -72,6 +72,10 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0-preview.7.*" />
     <PackageReference Include="Toolbelt.Blazor.GetProperty.Script" Version="1.2.0" />
   </ItemGroup>
+
+  <Target Name="UpdateILLinkSubstitutionsXml" Inputs="Toolbelt.Blazor.SpeechSynthesis.csproj" Outputs="ILLink.Substitutions.xml">
+    <XmlPoke XmlInputPath="ILLink.Substitutions.xml" Query="/linker/assembly/type/method[@signature='System.String GetVersionText()']/@value" Value="$(Version)" />
+  </Target>
 
   <Target Name="BuildPackageReleaseNotes" BeforeTargets="GenerateNuspec">
     <ReadLinesFromFile File="../RELEASE-NOTES.txt">

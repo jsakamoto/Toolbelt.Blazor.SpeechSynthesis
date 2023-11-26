@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<linker>
+  <assembly fullname="Toolbelt.Blazor.SpeechSynthesis">
+    <type fullname="Toolbelt.Blazor.SpeechSynthesis.SpeechSynthesisUtterance" preserve="all" />
+    <type fullname="Toolbelt.Blazor.SpeechSynthesis.SpeechSynthesisVoice" preserve="all" />
+  </assembly>
+</linker>

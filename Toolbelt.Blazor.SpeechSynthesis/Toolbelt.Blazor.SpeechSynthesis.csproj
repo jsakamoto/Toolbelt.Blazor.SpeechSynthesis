@@ -35,6 +35,9 @@
     <None Include="Build\Toolbelt.Blazor.SpeechSynthesis.targets" Pack="true" PackagePath="build\Toolbelt.Blazor.SpeechSynthesis.targets" />
     <None Include="BuildMultiTargeting\Toolbelt.Blazor.SpeechSynthesis.targets" Pack="true" PackagePath="buildMultiTargeting\Toolbelt.Blazor.SpeechSynthesis.targets" />
     <None Include="BuildTransitive\Toolbelt.Blazor.SpeechSynthesis.targets" Pack="true" PackagePath="buildTransitive\Toolbelt.Blazor.SpeechSynthesis.targets" />
+    <EmbeddedResource Include="ILLink.Descriptors.xml">
+      <LogicalName>ILLink.Descriptors.xml</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="ILLink.Substitutions.xml">
       <LogicalName>ILLink.Substitutions.xml</LogicalName>
     </EmbeddedResource>

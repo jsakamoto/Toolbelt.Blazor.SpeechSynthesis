@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <WarningsAsErrors>nullable</WarningsAsErrors>
     <PrepareForBuildDependsOn>$(PrepareForBuildDependsOn);UpdateILLinkSubstitutionsXml</PrepareForBuildDependsOn>
-    <Version>10.3.0</Version>
+    <Version>10.3.1</Version>
     <RazorLangVersion>3.0</RazorLangVersion>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <TypeScriptToolsVersion>3.0</TypeScriptToolsVersion>

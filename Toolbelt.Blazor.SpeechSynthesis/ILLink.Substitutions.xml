@@ -5,7 +5,7 @@
       <method signature="System.Boolean IsInProcessRuntime()" body="stub" value="true" />
     </type>
     <type fullname="Toolbelt.Blazor.SpeechSynthesis.SpeechSynthesis" feature="Toolbelt.Blazor.SpeechSynthesis.OptimizeForWasm" featurevalue="true">
-      <method signature="System.String GetVersionText()" body="stub" value="10.3.0" />
+      <method signature="System.String GetVersionText()" body="stub" value="10.3.1" />
     </type>
   </assembly>
 </linker>

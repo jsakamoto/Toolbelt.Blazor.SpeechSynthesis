@@ -1,12 +1,11 @@
-using SampleSite.Server8.Components;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
-//.AddInteractiveWebAssemblyComponents();
+    .AddInteractiveServerComponents()
+    .AddInteractiveWebAssemblyComponents();
 
 builder.Services.AddSpeechSynthesis();
 
@@ -28,9 +27,9 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
-//.AddInteractiveWebAssemblyRenderMode()
-//.AddAdditionalAssemblies(typeof(BlazorApp1.Client.Components.SpeechRecognitionComponent).Assembly);
+app.MapRazorComponents<SampleSite.Web.Components.App>()
+    .AddInteractiveServerRenderMode()
+    .AddInteractiveWebAssemblyRenderMode()
+    .AddAdditionalAssemblies(typeof(SampleSite.Web.Client._Imports).Assembly);
 
 app.Run();

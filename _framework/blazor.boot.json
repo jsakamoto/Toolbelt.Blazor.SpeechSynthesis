@@ -1,0 +1,63 @@
+{
+  "mainAssemblyName": "SampleSite.Client",
+  "resources": {
+    "hash": "sha256-4WQ+EfMJhGj9vPl6qrUaJIsp0d60jZwUVWRMdcFpx1k=",
+    "jsModuleNative": {
+      "dotnet.native.8.0.6.7vy6u5lete.js": "sha256-KAOg4LBmsD7mc0+Wej/iu7LmPOq8ljmb1z6ky8jYFrI="
+    },
+    "jsModuleRuntime": {
+      "dotnet.runtime.8.0.6.usxxzh3qee.js": "sha256-+E96dgYQl8OrHQb4yNZ7QwNr3SZzLSP8lwKRzwSiMsw="
+    },
+    "wasmNative": {
+      "dotnet.native.wasm": "sha256-+SniTFWvNbBZZlyfc+DdkniVYgcLih8GHxu43Rbr67g="
+    },
+    "assembly": {
+      "Microsoft.AspNetCore.Components.wasm": "sha256-RMYXUQ4ZobSVHQ8P5CZ4z9gKJm+Dvuxkxn6zSSWt3nM=",
+      "Microsoft.AspNetCore.Components.Web.wasm": "sha256-dIDsnog83GbAMAxu73hyDPmjSuT3H4ugHhHG7I5d6Z8=",
+      "Microsoft.AspNetCore.Components.WebAssembly.wasm": "sha256-LYJGTqka6p2RaQhwjm0nbX5muzjO6rM8oTE9uoUmGBs=",
+      "Microsoft.Extensions.Configuration.Abstractions.wasm": "sha256-87sn2TYqgdZ95sXmavjKEzoEfMgHnYQ9LOvnMX+aZcI=",
+      "Microsoft.Extensions.Configuration.Json.wasm": "sha256-Sxmy2ZS134URxbHEvdbS6NcQ3zXS7UWx/5ZPpwiW7FA=",
+      "Microsoft.Extensions.Configuration.wasm": "sha256-jYqHUZ07UYWc8POk7xhas6xQYH7t1qoTcylqoDqncJk=",
+      "Microsoft.Extensions.DependencyInjection.Abstractions.wasm": "sha256-Q6Yhy+74Ao+9QtddrcQ0vjhvbm2rxNl7JVAtSduGoh0=",
+      "Microsoft.Extensions.DependencyInjection.wasm": "sha256-gg8xZqJsBBrrNEyUGzYqhL3sqkuZ4AHAvdTdL9nZ0S0=",
+      "Microsoft.Extensions.Logging.Abstractions.wasm": "sha256-3II/GIuPvjaFZiD58t70VMMTnWZpypmdiz+mBMdExG0=",
+      "Microsoft.Extensions.Logging.wasm": "sha256-8BH+kQfjYuZWxprOICXJ4+tU0OdJOYDKN7G0S3zYYHI=",
+      "Microsoft.Extensions.Options.wasm": "sha256-ezKJDNjeghS/qMdQmUpBPdH7bCDLrqkNqS6RsLxlpOY=",
+      "Microsoft.Extensions.Primitives.wasm": "sha256-6187ynEahDlSLMBvD4vAmiLpZ3clRb5xu6rM7O8AxNo=",
+      "Microsoft.JSInterop.wasm": "sha256-qUxtkjfciDKlSM4gDsdrmrFd/9ii/JwgZOcZWedX+Ew=",
+      "Microsoft.JSInterop.WebAssembly.wasm": "sha256-nJo9AftA2/mHxtXapqHsgjzQgIHOpue2DnVtxkgTSME=",
+      "SampleSite.Client.wasm": "sha256-xKM3HSJRZbez+XRlwD/gNmjCLsMVGLd+EyD/DJhY8MQ=",
+      "SampleSite.Components.wasm": "sha256-PHtYYBgFADy6nFktYNap8BA+uVB3IKpWrD+D44yQ7l0=",
+      "System.Collections.Concurrent.wasm": "sha256-HeS3VQoHp1M6+XAQPjxH03AyklvXVDPVa8BlH2pS1uI=",
+      "System.Collections.wasm": "sha256-kyHsIyKSNX+Q8x4VUsK/djTB+PMsd5PnerJgCenh0Eo=",
+      "System.ComponentModel.wasm": "sha256-tqO2Y4mD7n9rI1g+QSashz42lb50djXmx3ECzGEqbcY=",
+      "System.Console.wasm": "sha256-YVEtDsgCrcsVM9H/zjtEt04AHWePUVSUyKJVGPTSILM=",
+      "System.Linq.wasm": "sha256-r4r8gUGtm+1vUATATrrS/4V84SCU5xMhwPxztfPYH0Q=",
+      "System.Memory.wasm": "sha256-05mq1d5+fl+Jf5Opq0AK/NVhyxi2j4gf2wsx7fffDws=",
+      "System.Net.Http.wasm": "sha256-dSXFvvXeO8FkvTjaA1DMeL0pt81/52s75cqDtZqU0JU=",
+      "System.Net.Primitives.wasm": "sha256-yarnBbF9PRPSOzw+onC4dZYqBZ30U2LeuOOtjzoz3/0=",
+      "System.Private.CoreLib.wasm": "sha256-gxCVczvzO1DeyoEWIz1P6iY1tJrTwhlcWPJce7gNNLs=",
+      "System.Private.Uri.wasm": "sha256-kSxT6D0wHXAUomisyoQU8pzQ081Bb+ebfeJXNMFmbxQ=",
+      "System.Runtime.InteropServices.JavaScript.wasm": "sha256-ohmTG2LKnaLiLU/QRRbUrParj93c0o4hJ9BDNBVdzco=",
+      "System.Runtime.wasm": "sha256-D53l2KPygt4eQWC7S0hvjyaz7UquISyqIl+uvkAa4IE=",
+      "System.Text.Encodings.Web.wasm": "sha256-kUB1Y7HBZCe5X05htxKLP7ZedG/Lb4sP+qjmvelsUdI=",
+      "System.Text.Json.wasm": "sha256-NNNp1E5ypaXOhzmr60LoGIdzaIL1gHfy9YCpieVSesM=",
+      "System.Text.RegularExpressions.wasm": "sha256-dwAolM80K1HcjJlohUyI5Z8uUesGpmOiR347JGsQNLQ=",
+      "Toolbelt.Blazor.SpeechSynthesis.wasm": "sha256-PIC9Xa4gAulIfdMjlU4+PWf2RnVMG/bE1jBmpstHfBQ=",
+      "Toolbelt.Web.CssClassInlineBuilder.wasm": "sha256-Lz5vX4VegjYOysk/hfHlKMSrxYJjNDN01npY5z/F0H4="
+    },
+    "libraryInitializers": {
+      "_content/Toolbelt.Blazor.GetProperty.Script/Toolbelt.Blazor.GetProperty.Script.lib.module.js": "sha256-rN9ebccf1yzi+bWyyip51JJuAKONWUHDBKWnKUpDWAA="
+    },
+    "modulesAfterRuntimeReady": {
+      "../_content/Toolbelt.Blazor.GetProperty.Script/Toolbelt.Blazor.GetProperty.Script.lib.module.js": "sha256-rN9ebccf1yzi+bWyyip51JJuAKONWUHDBKWnKUpDWAA="
+    }
+  },
+  "cacheBootResources": true,
+  "debugLevel": 0,
+  "linkerEnabled": true,
+  "globalizationMode": "invariant",
+  "extensions": {
+    "blazor": {}
+  }
+}

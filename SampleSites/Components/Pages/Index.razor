@@ -22,9 +22,14 @@
         Voice:
         <select @onchange="OnChangeVoice" style="max-width:100%;">
             <option value="@(default(string))">(unset)</option>
-            @foreach (var voice in Voices.OrderBy(v => v.Lang).ThenBy(v => v.VoiceURI))
+            @foreach (var voicesOfLang in Voices.GroupBy(v => v.Lang))
             {
-                <option @key="voice.VoiceIdentity" value="@voice.VoiceIdentity" selected="@(voice.VoiceIdentity == this.VoiceId)">@voice.Name (@voice.Lang)</option>
+                <optgroup label="@voicesOfLang.Key">
+                    @foreach (var voice in voicesOfLang.OrderBy(v => v.Lang).ThenBy(v => v.VoiceURI))
+                    {
+                        <option @key="voice.VoiceIdentity" value="@voice.VoiceIdentity" selected="@(voice.VoiceIdentity == this.VoiceId)">@voice.Name</option>
+                    }
+                </optgroup>
             }
         </select>
     </p>

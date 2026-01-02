@@ -2,10 +2,15 @@
 
   <PropertyGroup>
     <ToolbeltBlazorSpeechSynthesisOptimizeForWasm Condition=" '$(ToolbeltBlazorSpeechSynthesisOptimizeForWasm)' == '' ">true</ToolbeltBlazorSpeechSynthesisOptimizeForWasm>
+    <ToolbeltBlazorSpeechSynthesisJavaScriptCacheBusting Condition=" '$(ToolbeltBlazorSpeechSynthesisJavaScriptCacheBusting)' == '' ">true</ToolbeltBlazorSpeechSynthesisJavaScriptCacheBusting>
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(RuntimeIdentifier)' == 'browser-wasm' AND '$(ToolbeltBlazorSpeechSynthesisOptimizeForWasm)' == 'true' ">
     <RuntimeHostConfigurationOption Include="Toolbelt.Blazor.SpeechSynthesis.OptimizeForWasm" Value="true" Trim="true" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(RuntimeIdentifier)' == 'browser-wasm' AND '$(ToolbeltBlazorSpeechSynthesisJavaScriptCacheBusting)' != '' ">
+    <RuntimeHostConfigurationOption Include="Toolbelt.Blazor.SpeechSynthesis.JavaScriptCacheBusting" Value="$(ToolbeltBlazorSpeechSynthesisJavaScriptCacheBusting)" Trim="true" />
   </ItemGroup>
 
 </Project>

@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <linker>
   <assembly fullname="Toolbelt.Blazor.SpeechSynthesis">
-    <type fullname="Toolbelt.Blazor.SpeechSynthesis.SpeechSynthesis" feature="Toolbelt.Blazor.SpeechSynthesis.OptimizeForWasm" featurevalue="true">
+
+    <type feature="Toolbelt.Blazor.SpeechSynthesis.OptimizeForWasm" featurevalue="true" fullname="Toolbelt.Blazor.SpeechSynthesis.SpeechSynthesis">
       <method signature="System.Boolean IsInProcessRuntime()" body="stub" value="true" />
+    </type>
+
+    <type feature="Toolbelt.Blazor.SpeechSynthesis.JavaScriptCacheBusting" featurevalue="true" fullname="Toolbelt.Blazor.SpeechSynthesis.SpeechSynthesis">
+      <method signature="System.Boolean CacheBustingEnabled()" body="stub" value="true" />
+    </type>
+    <type feature="Toolbelt.Blazor.SpeechSynthesis.JavaScriptCacheBusting" featurevalue="false" fullname="Toolbelt.Blazor.SpeechSynthesis.SpeechSynthesis">
+      <method signature="System.Boolean CacheBustingEnabled()" body="stub" value="false" />
     </type>
   </assembly>
 </linker>

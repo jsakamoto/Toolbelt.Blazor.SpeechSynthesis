@@ -283,6 +283,8 @@ public class SpeechSynthesis : IAsyncDisposable
 
     private IJSObjectReference? _JSModule = null;
 
+    private static bool CacheBustingEnabled() => Environment.GetEnvironmentVariable("TOOLBELT_BLAZOR_SPEECHSYNTHESIS_JSCACHEBUSTING") != "0";
+
     private async ValueTask<T> InvokeJavaScriptAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.PublicProperties)] T>(string identifier, params object[] args)
     {
         if (this._JSModule is null)
@@ -294,12 +296,23 @@ public class SpeechSynthesis : IAsyncDisposable
                 {
                     // Add version string for refresh token only navigator is online.
                     // (If the app runs on the offline mode, the module url with query parameters might cause the "resource not found" error.)
+
+#if NET10_0_OR_GREATER
+                    var cacheBustingQueryAsync = CacheBustingEnabled() ?
+                        this.JSRuntime.GetValueAsync<bool>("navigator.onLine").AsTask().ContinueWith(static task => task.Result ? "?v=" + VersionInfo.VersionText : "") :
+                        Task.FromResult("");
+
+                    this._JSModule = await cacheBustingQueryAsync
+                        .ContinueWith(task => this.JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/Toolbelt.Blazor.SpeechSynthesis/script.min.js" + task.Result).AsTask())
+                        .Unwrap();
+#else
                     var isOnLine = await this.JSRuntime.InvokeAsync<bool>("Toolbelt.Blazor.getProperty", "navigator.onLine");
 
                     var scriptPath = "./_content/Toolbelt.Blazor.SpeechSynthesis/script.min.js";
                     if (isOnLine) scriptPath += $"?v={VersionInfo.VersionText}";
 
                     this._JSModule = await this.JSRuntime.InvokeAsync<IJSObjectReference>("import", scriptPath);
+#endif
                 }
             }
             finally { this.Syncer.Release(); }

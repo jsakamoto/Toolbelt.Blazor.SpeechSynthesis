@@ -1,0 +1,21 @@
+/* _content/SampleSite.Components/Pages/Index.razor.rz.scp.css */
+.status .indicators[b-e5tgv1r2ba] {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+    .status .indicators div[b-e5tgv1r2ba] {
+        border: solid 1px #888;
+        border-radius: 6px;
+        width: 5rem;
+        text-align: center;
+        padding: 0.2rem 0;
+        background-color: #333;
+        color: #888;
+        margin-bottom: 0.5rem;
+    }
+
+        .status .indicators div.active[b-e5tgv1r2ba] {
+            color: #6f6;
+        }

@@ -10,24 +10,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Checkout the code
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
 
       # Install .NET SDK
       - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 10.0.x
 
       - name: Install .NET WebAssembly Tools
         run: dotnet workload install wasm-tools
 
       # Publish the site
       - name: Publish
-        run: dotnet publish SampleSites/Client/SampleSite.Client.csproj -f:net8.0 -c:Release -o:public -p:GHPages=true
+        run: dotnet publish SampleSites/Client/SampleSite.Client.csproj -f:net10.0 -o:public -p:GHPages=true
 
       # Deploy the site
       - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: public/wwwroot

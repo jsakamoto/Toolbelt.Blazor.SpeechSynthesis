@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Toolbelt.Blazor.SpeechSynthesis;
 
 namespace SampleSite.Components.Pages;
@@ -34,7 +34,7 @@ public partial class Index
 
         if (firstRender)
         {
-            if (this.Text == null) this.Text = "Hello, World!";
+            if (string.IsNullOrEmpty(this.Text)) this.Text = "Hello, World!";
             this.UpdateUrl();
 
             this.Voices = await this.SpeechSynthesis.GetVoicesAsync();

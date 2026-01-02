@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/README/">
+    <File Path="README.md" />
+    <File Path="RELEASE-NOTES.txt" />
+  </Folder>
+  <Folder Name="/SampleSites/">
+    <Project Path="SampleSites/Client/SampleSite.Client.csproj" />
+    <Project Path="SampleSites/Components/SampleSite.Components.csproj" />
+    <Project Path="SampleSites/Web.Client/SampleSite.Web.Client.csproj" />
+    <Project Path="SampleSites/Web/SampleSite.Web.csproj" />
+  </Folder>
+  <Folder Name="/_Solution Items/">
+    <File Path=".github/workflows/gh-pages.yml" />
+  </Folder>
+  <Project Path="Toolbelt.Blazor.SpeechSynthesis/Toolbelt.Blazor.SpeechSynthesis.csproj" />
+</Solution>

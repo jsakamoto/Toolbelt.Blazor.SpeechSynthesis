@@ -1,4 +1,4 @@
-﻿@page "/"
+@page "/"
 @using Toolbelt.Blazor.SpeechSynthesis
 @using System.Runtime.InteropServices
 @inject SpeechSynthesis SpeechSynthesis
@@ -82,10 +82,9 @@
             </div>
         </section>
 
-        <section>
-            <h2>Runtime information</h2>
-            <p>@RuntimeInformation.FrameworkDescription / @RuntimeInformation.ProcessArchitecture</p>
-        </section>
-
     </div>
 </details>
+
+<footer>
+    @RuntimeInformation.FrameworkDescription / @RuntimeInformation.ProcessArchitecture
+</footer>

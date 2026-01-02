@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="PublishSPAforGitHubPages.Build" Version="2.1.0" />
+    <PackageReference Include="PublishSPAforGitHubPages.Build" Version="3.0.3" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">

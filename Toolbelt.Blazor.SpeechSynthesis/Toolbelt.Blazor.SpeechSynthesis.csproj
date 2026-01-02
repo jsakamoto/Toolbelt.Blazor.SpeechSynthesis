@@ -16,6 +16,7 @@
     <Authors>J.Sakamoto</Authors>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/jsakamoto/Toolbelt.Blazor.SpeechSynthesis/</PackageProjectUrl>
+    <RepositoryUrl>$(PackageProjectUrl)</RepositoryUrl>
     <Description>SpeechSynthesis API access for your Blazor apps.</Description>
     <PackageTags>blazor,speech,speechsynthesis</PackageTags>
     <PackageReleaseNotes>(Please write the package release notes in "../RELEASE-NOTES.txt")</PackageReleaseNotes>

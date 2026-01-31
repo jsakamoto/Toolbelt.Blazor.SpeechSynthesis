@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Blazor SpeechSynthesis Sample Site - WebAssembly App</title>
+    <base href="/Toolbelt.Blazor.SpeechSynthesis/" />
+
+    <!-- Content Security Policy -->
+    <!-- (If you want to run this app on .NET 5 or earlier, you must add "data:" to the "script-src" policy.) -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https://img.shields.io/; connect-src 'self' ws://localhost:* http://localhost:*; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline' data: https://cdn.jsdelivr.net/npm/water.css@2/out/water.css; font-src 'self'; object-src 'none';" />
+
+    <link rel="stylesheet" href="_content/SampleSite.Components/css/blazor-ui.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <link rel="stylesheet" href="SampleSite.Client.styles.css">
+</head>
+
+<body>
+    <div id="app">
+        <svg class="loading-progress">
+            <circle r="40%" cx="50%" cy="50%" />
+            <circle r="40%" cx="50%" cy="50%" />
+        </svg>
+        <div class="loading-progress-text"></div>
+    </div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+
+    <script src="_framework/blazor.webassembly.js" autostart="false"></script>
+    <script src="brotliloader.min.js" type="module"></script>
+</body>
+
+</html>

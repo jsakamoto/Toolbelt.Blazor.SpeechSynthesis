@@ -5,7 +5,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <WarningsAsErrors>$(WarningsAsErrors);nullable</WarningsAsErrors>
-    <PrepareForBuildDependsOn>$(PrepareForBuildDependsOn);UpdateILLinkSubstitutionsXml</PrepareForBuildDependsOn>
     <Version>11.0.0</Version>
     <TypeScriptToolsVersion>3.0</TypeScriptToolsVersion>
     <TypeScriptCompileBlocked>false</TypeScriptCompileBlocked>
@@ -67,10 +66,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.0" />
   </ItemGroup>
 
-  <Target Name="UpdateILLinkSubstitutionsXml" Inputs="Toolbelt.Blazor.SpeechSynthesis.csproj" Outputs="ILLink.Substitutions.xml">
-    <XmlPoke XmlInputPath="ILLink.Substitutions.xml" Query="/linker/assembly/type/method[@signature='System.String GetVersionText()']/@value" Value="$(Version)" />
-  </Target>
-
   <Target Name="BuildPackageReleaseNotes" BeforeTargets="GenerateNuspec">
     <ReadLinesFromFile File="../RELEASE-NOTES.txt">
       <Output TaskParameter="Lines" ItemName="ReleaseNoteLines" />
@@ -99,7 +94,7 @@
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
   </PropertyGroup>
 
-  <Target Name="_GenerateVersionInfoClass" Inputs="Toolbelt.Blazor.SpeechSynthesis" Outputs="VersionInfo.cs">
+  <Target Name="_GenerateVersionInfoClass" Inputs="Toolbelt.Blazor.SpeechSynthesis.csproj" Outputs="VersionInfo.cs">
     <ItemGroup>
       <VersionInfoLines Include="namespace $(RootNamespace)%3b%0d%0a"/>
       <VersionInfoLines Include="internal static class VersionInfo"/>
